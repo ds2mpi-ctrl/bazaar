@@ -579,7 +579,7 @@
       const myOrder = orders.find(o => o.id === myOrderId);
       if(!myOrder || myOrder.status !== "준비완료") return;
 
-      const token = `${myOrderId}_준비완료`;
+      const token = `${myOrderId}_준비완료_${myOrder.recallAt || 0}`;
       if(localStorage.getItem(READY_ALERT_KEY) === token) return;
 
       localStorage.setItem(READY_ALERT_KEY, token);
@@ -1090,7 +1090,7 @@ function fallbackCopyText(text){
         renderMyOrder();
 
         const myOrder = myOrderId ? orders.find(o=>o.id===myOrderId) : null;
-        if(myOrder && myOrder.status === "준비완료") maybeShowReadyAlert();
+        if(myOrder && myOrder.status === "준비완료") maybeShowReadyAlert(myOrder.recallAt);
         else stopReadyAlert();
       });
     }
