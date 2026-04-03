@@ -469,7 +469,7 @@
 
     const params = new URLSearchParams(location.search);
     const boothId     = params.get("booth")   || "main";
-    const boothPrefix = params.get("prefix")  || "A";
+    const boothPrefix = params.get("booth")  || (boothId !== "main" ? boothId.toUpperCase() : "A");
 
     const MENU_PATH    = `settings/menu/${boothId}`;
     const PAYMENT_PATH = `settings/payment/${boothId}`;
