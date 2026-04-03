@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>바자회 판매자 센터</title>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    :root {
+      --primary: #2ed573; --accent: #ffa502; --danger: #ff4757; --dark: #2f3542;
+      --blue: #1e90ff; --gray: #f1f2f6; --card: #fff; --muted: #747d8c;
+      --purple: #6c5ce7; --bg: #f8f9fa;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      padding-bottom: 30px;
+    }
+
+    /* 상단 고정 바 */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 10px 14px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .summary-card {
+      background: var(--gray);
+      padding: 8px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+      user-select: none;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 14px;
+      color: var(--dark);
+      margin-top: 2px;
+    }
+
+    .summary-card.active {
+      background: #eaf4ff;
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .summary-card.active strong {
+      color: var(--blue);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* 탭 메뉴 */
+    .tab-menu {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      background: #eef3f8;
+      padding: 6px;
+      border-radius: 14px;
+    }
+
+    .tab-btn {
+      padding: 13px 10px;
+      border: none;
+      background: #fff;
+      font-weight: 800;
+      color: var(--muted);
+      cursor: pointer;
+      flex: 1;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      background: var(--blue);
+      box-shadow: 0 6px 14px rgba(30,144,255,0.22);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-blue { background: var(--blue); color: #fff; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-gray { background: #ced6e0; color: #2f3542; }
+
+    /* 주문 카드 */
+    .order-card {
+      border: 1px solid #eee;
+      border-radius: 14px;
+      padding: 15px;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+
+    .order-card.new-order {
+      border: 2px solid var(--blue);
+      background: #f0f7ff;
+    }
+
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      color: #fff;
+      font-weight: bold;
+      margin-left: 5px;
+      white-space: nowrap;
+    }
+
+    .status-주문접수 { background: #57606f; }
+    .status-입금확인 { background: #1e90ff; }
+    .status-준비중 { background: #ffa502; }
+    .status-준비완료 { background: #2ed573; }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 8px;
+      font-family: inherit;
+    }
+
+    .chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .preview-box {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .done-section-title {
+      margin: 18px 2px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .done-order-card {
+      background: #f1f2f6;
+      border: 1px solid #dfe4ea;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      opacity: 0.96;
+    }
+
+    .done-order-card summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #747d8c;
+      font-size: 13px;
+      user-select: none;
+    }
+
+    .done-order-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .done-order-card[open] summary {
+      background: #e9edf3;
+      color: var(--dark);
+    }
+
+    .done-order-detail {
+      padding: 12px 14px;
+      border-top: 1px solid #dfe4ea;
+      font-size: 13px;
+      color: #57606f;
+      background: #f8f9fb;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sticky-header">
+    <div class="summary-grid">
+      <div class="summary-card" id="card-waiting" onclick="setSummaryFilter('waiting')">대기<strong id="waitingCount">0</strong></div>
+      <div class="summary-card" id="card-ready" onclick="setSummaryFilter('ready')">미수령<strong id="readyCount">0</strong></div>
+      <div class="summary-card" id="card-done" onclick="setSummaryFilter('done')">완료<strong id="doneCount">0</strong></div>
+      <div class="summary-card" id="card-sales" onclick="setSummaryFilter('sales')">매출<strong id="salesAmount">0</strong></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="tab-menu">
+      <button class="tab-btn active" onclick="openTab('tab-orders', this)">📋 주문관리</button>
+      <button class="tab-btn" onclick="openTab('tab-menu', this)">🍴 메뉴관리</button>
+      <button class="tab-btn" onclick="openTab('tab-settings', this)">⚙️ 정산/설정</button>
+    </div>
+
+    <div id="tab-orders" class="tab-content active">
+      <div id="orderList"></div>
+    </div>
+
+    <div id="tab-menu" class="tab-content">
+      <div class="section">
+        <div class="title">➕ 새 메뉴 등록</div>
+        <input type="text" id="newMenuName" placeholder="메뉴명 (예: 떡볶이)" />
+        <div style="display:flex; gap:8px;">
+          <input type="number" id="newMenuPrice" placeholder="가격 (원)" />
+          <input type="number" id="newMenuStock" placeholder="초기재고 (개)" />
+        </div>
+        <button class="btn btn-blue" style="width:100%" onclick="addMenu()">메뉴 저장하기</button>
+      </div>
+
+      <div class="section">
+        <div class="title">🍴 메뉴 및 재고 관리</div>
+        <div id="manageList"></div>
+      </div>
+    </div>
+
+    <div id="tab-settings" class="tab-content">
+      <div class="section">
+        <div class="title">💳 입금 계좌 설정</div>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="bankName" placeholder="은행명" />
+          <input type="text" id="accountOwner" placeholder="예금주" />
+        </div>
+        <input type="text" id="accountNumber" placeholder="계좌번호 (- 포함)" />
+        <textarea id="paymentNotice" placeholder="입금 안내 메시지 (예: 입금 확인 후 조리가 시작됩니다.)"></textarea>
+        <button class="btn btn-blue" style="width:100%" onclick="savePaymentInfo()">계좌 정보 저장</button>
+      </div>
+
+      <div class="section">
+        <div class="title">⏰ 운영 시간 및 모드</div>
+        <div style="display:flex; gap:8px;">
+          <input type="time" id="openAt" />
+          <input type="time" id="closeAt" />
+        </div>
+        <input type="text" id="controlMessage" placeholder="상태 안내 문구" />
+        <div class="chips">
+          <button class="btn btn-blue" onclick="saveSchedule()">운영 설정 저장</button>
+          <button class="btn btn-primary" onclick="setBoothMode('auto')">자동</button>
+          <button class="btn btn-primary" onclick="setBoothMode('open')">수동오픈</button>
+          <button class="btn btn-accent" onclick="setBoothMode('paused')">중지</button>
+          <button class="btn btn-danger" onclick="setBoothMode('closed')">마감</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="title">🔄 초기화 (Reset)</div>
+        <div class="small" style="color:var(--danger); margin-bottom:10px;">
+          * 전체 리셋 시 주문 번호는 <strong>A01</strong>부터 다시 시작됩니다.
+        </div>
+        <div class="chips">
+          <button class="btn btn-gray" onclick="resetOrders()">주문만 리셋</button>
+          <button class="btn btn-danger" onclick="fullReset()">전체 데이터 리셋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBowzlxR0AZZIe4e0pzoZHmbRLwy_X1_S8",
+      authDomain: "l-t-4-19-bazaar.firebaseapp.com",
+      databaseURL: "https://l-t-4-19-bazaar-default-rtdb.firebaseio.com",
+      projectId: "l-t-4-19-bazaar",
+      storageBucket: "l-t-4-19-bazaar.firebasestorage.app",
+      messagingSenderId: "878700674440",
+      appId: "1:878700674440:web:6a1d94557ea9ba9a798e3d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const params = new URLSearchParams(location.search);
+    const boothId = params.get("booth") || "main";
+
+    const MENU_PATH = `settings/menu/${boothId}`;
+    const PAYMENT_PATH = `settings/payment/${boothId}`;
+    const CONTROL_PATH = `settings/boothControl/${boothId}`;
+    const ORDERS_PATH = `orders/${boothId}`;
+    const COUNTER_PATH = `settings/counters/${boothId}`;
+    const ORDER_COUNTER_PATH = `settings/orderCounter/${boothId}`;
+
+    let menuMap = {};
+    let orders = [];
+    let previousOrderIds = new Set();
+    let newOrderHighlightIds = new Set();
+    let audioUnlocked = false;
+    let currentSummaryFilter = "all";
+
+    // --- 기능: 탭 전환 ---
+    function openTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function openTabDirect(tabId){
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+
+      const buttons = document.querySelectorAll('.tab-btn');
+      if(tabId === 'tab-orders' && buttons[0]) buttons[0].classList.add('active');
+      if(tabId === 'tab-menu' && buttons[1]) buttons[1].classList.add('active');
+      if(tabId === 'tab-settings' && buttons[2]) buttons[2].classList.add('active');
+    }
+
+    function setSummaryFilter(filter){
+      currentSummaryFilter = (currentSummaryFilter === filter) ? "all" : filter;
+
+      document.querySelectorAll('.summary-card').forEach(card => card.classList.remove('active'));
+      if(currentSummaryFilter !== "all"){
+        const target = document.getElementById(`card-${currentSummaryFilter}`);
+        if(target) target.classList.add('active');
+      }
+
+      openTabDirect('tab-orders');
+      renderOrders();
+    }
+
+    function getStatusLabel(status) {
+      return status === "준비완료" ? "고객호출" : status;
+    }
+
+    function formatDateTime(ts) {
+      if (!ts) return "-";
+      const d = new Date(ts);
+      const yy = String(d.getFullYear()).slice(2);
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mi = String(d.getMinutes()).padStart(2, '0');
+      return `${yy}.${mm}.${dd} ${hh}:${mi}`;
+    }
+
+    // --- 기능: 입금 계좌 저장 ---
+    function savePaymentInfo(){
+      const data = {
+        bankName: document.getElementById("bankName").value,
+        accountNumber: document.getElementById("accountNumber").value,
+        accountOwner: document.getElementById("accountOwner").value,
+        notice: document.getElementById("paymentNotice").value
+      };
+      db.ref(PAYMENT_PATH).set(data).then(() => alert("계좌 정보가 저장되었습니다."));
+    }
+
+    // --- 기능: 운영 시간 저장 ---
+    function saveSchedule(){
+      const data = {
+        openAt: document.getElementById("openAt").value,
+        closeAt: document.getElementById("closeAt").value,
+        message: document.getElementById("controlMessage").value
+      };
+      db.ref(CONTROL_PATH).update(data).then(() => alert("운영 설정이 저장되었습니다."));
+    }
+
+    function setBoothMode(mode){
+      db.ref(CONTROL_PATH).update({ mode }).then(() => alert(`현재 상태: ${mode}`));
+    }
+
+    // --- 기능: 메뉴 관리 (등록/수정/삭제) ---
+    function addMenu(){
+      const name = document.getElementById("newMenuName").value.trim();
+      const price = Number(document.getElementById("newMenuPrice").value);
+      const stock = Number(document.getElementById("newMenuStock").value);
+      if(!name || !price) return alert("이름과 가격을 입력하세요.");
+      db.ref(MENU_PATH).push({ name, price, stock, initialStock: stock, active: true });
+      document.getElementById("newMenuName").value = "";
+      document.getElementById("newMenuPrice").value = "";
+      document.getElementById("newMenuStock").value = "";
+    }
+
+    function deleteMenu(key){
+      if(confirm("정말 이 메뉴를 삭제하시겠습니까?")) {
+        db.ref(`${MENU_PATH}/${key}`).remove();
+      }
+    }
+
+    function toggleMenu(key, currentActive){
+      db.ref(`${MENU_PATH}/${key}`).update({ active: !currentActive });
+    }
+
+    function updateStock(key, delta){
+      db.ref(`${MENU_PATH}/${key}/stock`).transaction(s => Math.max(0, (s || 0) + delta));
+    }
+
+    // --- 기능: 주문 상태 변경 ---
+    async function setOrderStatus(id, status) {
+      const updateData = { status };
+
+      if (status === "수령완료") {
+        const snap = await db.ref(`${ORDERS_PATH}/${id}/completedAt`).once("value");
+        if (!snap.exists()) {
+          updateData.completedAt = firebase.database.ServerValue.TIMESTAMP;
+        }
+      }
+
+      await db.ref(`${ORDERS_PATH}/${id}`).update(updateData);
+      newOrderHighlightIds.delete(id);
+    }
+
+    // 기존 함수는 남겨두되 현재 UI에서는 사용 안 함
+    function cancelOrder(id) {
+      if(!confirm("주문을 취소하고 재고를 복구할까요?")) return;
+      const order = orders.find(o => o.id === id);
+      if(order && order.items) {
+        order.items.forEach(item => {
+          db.ref(`${MENU_PATH}/${item.menuId}/stock`).transaction(s => (s || 0) + item.qty);
+        });
+      }
+      db.ref(`${ORDERS_PATH}/${id}`).update({ status: "취소" });
+    }
+
+    // --- 핵심 기능: 주문 카운터 및 리셋 ---
+    async function resetOrders(){
+      if(!confirm("주문을 비우고 번호를 A01번부터 다시 시작할까요?")) return;
+      await db.ref(ORDERS_PATH).remove();
+      await db.ref(COUNTER_PATH).set(0);
+      await db.ref(ORDER_COUNTER_PATH).set(0);
+      alert("주문 목록과 번호가 초기화되었습니다.");
+    }
+
+    async function fullReset(){
+      if(!confirm("모든 재고를 초기화하고 주문 번호도 A01부터 다시 시작하시겠습니까?")) return;
+      await db.ref(ORDERS_PATH).remove();
+      await db.ref(COUNTER_PATH).set(0);
+      await db.ref(ORDER_COUNTER_PATH).set(0);
+
+      const updates = {};
+      Object.entries(menuMap).forEach(([key, m]) => {
+        updates[`${key}/stock`] = m.initialStock || 0;
+        updates[`${key}/active`] = true;
+      });
+
+      await db.ref(MENU_PATH).update(updates);
+      alert("전체 리셋 완료!");
+    }
+
+    // --- 렌더링: 메뉴 리스트 ---
+    function renderMenus(){
+      const wrap = document.getElementById("manageList");
+      wrap.innerHTML = "";
+
+      Object.entries(menuMap).forEach(([key, m]) => {
+        wrap.innerHTML += `
+          <div class="menu-item">
+            <div>
+              <strong style="${m.active ? '' : 'text-decoration:line-through; color:red;'}">${m.name}</strong><br>
+              <span class="small">가격: ${Number(m.price || 0).toLocaleString()}원 / 재고: ${m.stock || 0}</span>
+            </div>
+            <div class="chips">
+              <button class="btn btn-gray" onclick="updateStock('${key}',1)">+1</button>
+              <button class="btn btn-gray" onclick="updateStock('${key}',-1)">-1</button>
+              <button class="btn btn-accent" onclick="toggleMenu('${key}', ${m.active})">${m.active ? '판매중지':'재개'}</button>
+              <button class="btn btn-danger" onclick="deleteMenu('${key}')">삭제</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // --- 렌더링: 주문 리스트 ---
+    function renderOrders(){
+      const wrap = document.getElementById("orderList");
+
+      let activeOrders = orders
+        .filter(o => !["수령완료", "취소"].includes(o.status))
+        .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      let doneOrders = orders
+        .filter(o => o.status === "수령완료")
+        .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      if(currentSummaryFilter === "waiting"){
+        activeOrders = activeOrders.filter(o => ["주문접수","입금확인","준비중"].includes(o.status));
+        doneOrders = [];
+      } else if(currentSummaryFilter === "ready"){
+        activeOrders = activeOrders.filter(o => o.status === "준비완료");
+        doneOrders = [];
+      } else if(currentSummaryFilter === "done"){
+        activeOrders = [];
+        doneOrders = doneOrders.filter(o => o.status === "수령완료");
+      } else if(currentSummaryFilter === "sales"){
+        activeOrders = orders
+          .filter(o => !["수령완료","취소"].includes(o.status))
+          .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+        doneOrders = orders
+          .filter(o => o.status === "수령완료")
+          .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+      }
+
+      if(!activeOrders.length && !doneOrders.length) {
+        wrap.innerHTML = '<div style="text-align:center; padding:50px; color:#ccc;">해당 조건의 주문이 없습니다.</div>';
+        return;
+      }
+
+      const activeHtml = activeOrders.map(o => `
+        <div class="order-card ${newOrderHighlightIds.has(o.id) ? 'new-order' : ''}">
+          <div style="display:flex; justify-content:space-between; gap:8px;">
+            <strong><span style="font-size:1.2rem; color:var(--blue)">${o.orderNumber || '-'}</span> ${o.customerName || '익명'}</strong>
+            <span class="status-badge status-${o.status}">${getStatusLabel(o.status)}</span>
+          </div>
+          <div class="small" style="margin:8px 0; padding:8px; background:#f9f9f9; border-radius:8px;">
+            ${((o.items || []).map(i => `• ${i.name} ${i.qty}개`).join('<br>')) || '주문내역 없음'}
+          </div>
+          <div class="chips">
+            <button class="btn btn-blue" onclick="setOrderStatus('${o.id}','입금확인')">입금</button>
+            <button class="btn btn-accent" onclick="setOrderStatus('${o.id}','준비중')">준비중</button>
+            <button class="btn btn-primary" onclick="setOrderStatus('${o.id}','준비완료')">고객호출</button>
+            <button class="btn btn-gray" onclick="setOrderStatus('${o.id}','수령완료')">수령완료</button>
+          </div>
+        </div>
+      `).join('');
+
+      const doneHtml = doneOrders.length ? `
+        <div class="done-section-title">수령완료 기록</div>
+        ${doneOrders.map(o => `
+          <details class="done-order-card">
+            <summary>
+              <span>${o.orderNumber || '-'} ${o.customerName || '익명'} · ${Number(o.totalAmount || 0).toLocaleString()}원</span>
+              <span>내역보기</span>
+            </summary>
+            <div class="done-order-detail">
+              <div style="margin-bottom:8px;"><strong>거래완료</strong> : ${formatDateTime(o.completedAt)}</div>
+              <div style="margin-bottom:8px;"><strong>주문내역</strong></div>
+              <div>${((o.items || []).map(i => `• ${i.name} ${i.qty}개`).join('<br>')) || '주문내역 없음'}</div>
+            </div>
+          </details>
+        `).join('')}
+      ` : '';
+
+      wrap.innerHTML = activeHtml + doneHtml;
+    }
+
+    // --- 데이터 리스너 ---
+    db.ref(MENU_PATH).on("value", s => {
+      menuMap = s.val() || {};
+      renderMenus();
+    });
+
+    db.ref(PAYMENT_PATH).on("value", s => {
+      const data = s.val() || {};
+      document.getElementById("bankName").value = data.bankName || "";
+      document.getElementById("accountNumber").value = data.accountNumber || "";
+      document.getElementById("accountOwner").value = data.accountOwner || "";
+      document.getElementById("paymentNotice").value = data.notice || "";
+    });
+
+    db.ref(CONTROL_PATH).on("value", s => {
+      const data = s.val() || {};
+      document.getElementById("openAt").value = data.openAt || "";
+      document.getElementById("closeAt").value = data.closeAt || "";
+      document.getElementById("controlMessage").value = data.message || "";
+    });
+
+    db.ref(ORDERS_PATH).on("value", s => {
+      const data = s.val() || {};
+      const currentOrders = Object.keys(data).map(id => ({ id, ...data[id] }));
+
+      if(previousOrderIds.size > 0) {
+        currentOrders.forEach(o => {
+          if(!previousOrderIds.has(o.id)) newOrderHighlightIds.add(o.id);
+        });
+      }
+
+      orders = currentOrders;
+      previousOrderIds = new Set(orders.map(o => o.id));
+      renderOrders();
+      updateSummary();
+    });
+
+    function updateSummary() {
+      const waiting = orders.filter(o => ["주문접수","입금확인","준비중"].includes(o.status)).length;
+      const ready = orders.filter(o => o.status === "준비완료").length;
+      const done = orders.filter(o => o.status === "수령완료").length;
+      const sales = orders
+        .filter(o => o.status !== "취소")
+        .reduce((acc, o) => acc + Number(o.totalAmount || 0), 0);
+
+      document.getElementById("waitingCount").innerText = waiting;
+      document.getElementById("readyCount").innerText = ready;
+      document.getElementById("doneCount").innerText = done;
+      document.getElementById("salesAmount").innerText = sales.toLocaleString() + "원";
+    }
+  </script>
+</body>
+</html>
