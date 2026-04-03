@@ -476,6 +476,11 @@
       newOrderHighlightIds.delete(id);
     }
 
+    // 재호출: recallAt 갱신 → 구매자 알림 재발동
+    async function recallOrder(id) {
+      await db.ref(`${ORDERS_PATH}/${id}`).update({ recallAt: firebase.database.ServerValue.TIMESTAMP });
+    }
+
     // 기존 함수는 남겨두되 현재 UI에서는 사용 안 함
     function cancelOrder(id) {
       if(!confirm("주문을 취소하고 재고를 복구할까요?")) return;
@@ -585,6 +590,7 @@
             <button class="btn btn-blue" onclick="setOrderStatus('${o.id}','입금확인')">입금</button>
             <button class="btn btn-accent" onclick="setOrderStatus('${o.id}','준비중')">준비중</button>
             <button class="btn btn-primary" onclick="setOrderStatus('${o.id}','준비완료')">고객호출</button>
+            ${o.status === '준비완료' ? `<button class="btn btn-accent" onclick="recallOrder('${o.id}')">재호출</button>` : ''}
             <button class="btn btn-gray" onclick="setOrderStatus('${o.id}','수령완료')">수령완료</button>
           </div>
         </div>
