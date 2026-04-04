@@ -2,456 +2,691 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>바자회 주문하기</title>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-light: #eef2ff;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-bottom: 110px;
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+      background: #f5f0ea;
+      color: #1a1a1a;
+      font-size: 18px;
+      line-height: 1.75;
+      padding-bottom: 140px;
     }
 
-    /* ── HEADER ── */
+    /* ── 헤더 ── */
     .header {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, #312e81, #4f46e5);
-      color: #fff; padding: 14px 16px;
-      box-shadow: 0 2px 14px rgba(0,0,0,.22);
+      background: #b03a2e;
+      color: #fff;
+      padding: 20px 18px 16px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
-    .header-inner {
-      max-width: 640px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    .header-title {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
     }
-    .header-booth { font-size: 1.1rem; font-weight: 900; letter-spacing: -.3px; }
-    .header-sub   { font-size: .78rem; color: rgba(255,255,255,.7); margin-top: 2px; }
-
-    /* ── STATUS CHIP ── */
-    .status-chip {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 5px 11px; border-radius: 999px;
-      font-size: .78rem; font-weight: 800; white-space: nowrap;
-    }
-    .chip-open   { background: #d1fae5; color: #065f46; }
-    .chip-paused { background: #fef3c7; color: #92400e; }
-    .chip-closed { background: #fee2e2; color: #991b1b; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; }
-    .dot-open   { background: #10b981; }
-    .dot-paused { background: #f59e0b; animation: blink 1.5s infinite; }
-    .dot-closed { background: #ef4444; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-    /* ── CONTAINER ── */
-    .container { max-width: 640px; margin: 0 auto; padding: 16px 14px; }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--card); border-radius: 16px; padding: 18px;
-      margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.05);
-    }
-    .section-label {
-      font-size: .78rem; font-weight: 800; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px;
+    .header-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.82);
     }
 
-    /* ── BANNER ── */
-    .banner {
-      display: flex; gap: 10px; align-items: flex-start;
-      padding: 13px 14px; border-radius: 12px;
-      font-size: .87rem; line-height: 1.6; margin-bottom: 14px;
+    /* ── 운영 상태 배너 ── */
+    .status-banner {
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.5;
     }
-    .banner-icon   { font-size: 1.05rem; flex-shrink: 0; margin-top: 1px; }
-    .banner-warn   { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
-    .banner-closed { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-    .banner-notice { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .s-open   { background: #e8f5e9; color: #1b5e20; border-bottom: 3px solid #43a047; }
+    .s-paused { background: #fff8e1; color: #bf360c; border-bottom: 3px solid #fb8c00; }
+    .s-closed { background: #fce4ec; color: #880e4f; border-bottom: 3px solid #d81b60; }
 
-    /* ── NAME CARD ── */
-    .name-card {
-      background: linear-gradient(135deg, #fffbeb, #fef3c7);
-      border: 2px solid #fcd34d; border-radius: 16px;
-      padding: 18px; margin-bottom: 14px;
+    .wrap { max-width: 580px; margin: 0 auto; padding: 0 14px; }
+
+    /* ── 단계 공통 ── */
+    .step-block {
+      margin: 18px 0;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    .name-title {
-      font-size: 1rem; font-weight: 900; color: #78350f;
-      display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+    .step-head {
+      padding: 15px 18px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
     }
-    .req-badge {
-      padding: 2px 8px; border-radius: 999px;
-      background: #ef4444; color: #fff;
-      font-size: .72rem; font-weight: 800;
+    .step-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      font-size: 20px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
-    .name-desc  { font-size: .82rem; color: #92400e; margin-bottom: 12px; line-height: 1.5; }
+    .step-title {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.3;
+    }
+    .step-body { padding: 18px 18px 20px; }
+
+    /* ── 1단계: 이름 입력 (따뜻한 황토색) ── */
+    .step1 { background: #fff8e1; border: 2px solid #f9a825; }
+    .step1 .step-head { background: #f9a825; color: #3e2000; }
+    .step1 .step-badge { color: #3e2000; }
+
+    .name-guide {
+      font-size: 17px;
+      color: #5d4037;
+      margin-bottom: 14px;
+      line-height: 1.65;
+    }
     .name-input {
-      width: 100%; padding: 14px 16px;
-      font-size: 1.1rem; font-weight: 700;
-      border: 2px solid #fbbf24; border-radius: 12px;
-      outline: none; font-family: inherit; color: var(--text); background: #fff;
-      transition: .15s;
+      width: 100%;
+      padding: 16px 18px;
+      font-size: 22px;
+      font-weight: 700;
+      border: 3px solid #f9a825;
+      border-radius: 10px;
+      font-family: inherit;
+      color: #1a1a1a;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .name-input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.18); }
-    .name-input.filled { border-color: #10b981; }
+    .name-input:focus {
+      border-color: #e65100;
+      box-shadow: 0 0 0 4px rgba(230,81,0,0.15);
+    }
+    .name-input.filled {
+      border-color: #2e7d32;
+      background: #f1f8e9;
+    }
+    @keyframes namePulse {
+      0%,100% { border-color: #f9a825; }
+      50%      { border-color: #e53935; box-shadow: 0 0 0 6px rgba(229,57,53,0.2); }
+    }
+    .name-input.prompt { animation: namePulse 0.55s ease 3; }
+    .name-ok {
+      margin-top: 10px;
+      font-size: 17px;
+      color: #2e7d32;
+      font-weight: 700;
+      display: none;
+    }
+    .name-ok.show { display: block; }
 
-    /* ── MENU GRID ── */
+    /* ── 2단계: 메뉴 선택 (파란 계열) ── */
+    .step2 { background: #e8f4fd; border: 2px solid #1565c0; }
+    .step2 .step-head { background: #1565c0; color: #fff; }
+    .step2 .step-badge { color: #1565c0; }
+    .step2-guide {
+      font-size: 16px;
+      color: #0d3b6e;
+      margin-bottom: 14px;
+    }
+
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
     }
-    @media (min-width: 480px) { .menu-grid { grid-template-columns: repeat(3, 1fr); } }
-
     .menu-card {
-      border: 2px solid var(--border); border-radius: 14px;
-      padding: 14px; background: #fff; cursor: pointer;
-      user-select: none; transition: .15s; position: relative;
+      background: #fff;
+      border: 2px solid #90caf9;
+      border-radius: 11px;
+      padding: 15px 13px 13px;
+      cursor: pointer;
+      transition: transform 0.12s, border-color 0.12s;
+      position: relative;
     }
-    .menu-card:hover:not(.disabled) {
-      border-color: var(--primary);
-      box-shadow: 0 4px 14px rgba(79,70,229,.13);
-    }
-    .menu-card.in-cart  { border-color: var(--primary); background: #f5f3ff; }
-    .menu-card.disabled { opacity: .55; cursor: not-allowed; background: #f9fafb; }
-    .menu-card.name-locked { opacity: .45; background: #f9fafb; cursor: pointer; }
-    .menu-card.name-locked:hover { border-color: #fbbf24; box-shadow: 0 4px 14px rgba(245,158,11,.18); }
-    @keyframes namePulse {
-      0%,100% { border-color: #fbbf24; box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-      35%     { border-color: #ef4444; box-shadow: 0 0 0 7px rgba(239,68,68,.22); }
-    }
-    .name-input.prompt { animation: namePulse .55s ease 3; }
-    .menu-card-name  { font-size: .95rem; font-weight: 800; color: var(--text); margin-bottom: 4px; word-break: keep-all; }
-    .menu-card-price { font-size: .9rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-    .menu-card-stock { font-size: .74rem; color: var(--muted); }
-    .menu-card-stock.soldout { color: var(--danger); font-weight: 700; }
+    .menu-card:active:not(.disabled) { transform: scale(0.97); }
+    .menu-card.in-cart  { border-color: #1565c0; background: #e3f2fd; }
+    .menu-card.disabled { opacity: 0.5; cursor: not-allowed; background: #f5f5f5; }
+    .menu-card.name-locked { opacity: 0.65; }
 
-    .menu-qty-ctrl {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 6px; margin-top: 10px;
-    }
-    .mqb {
-      width: 30px; height: 30px; border: none; border-radius: 8px;
-      font-size: 1rem; font-weight: 900; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: .1s;
-    }
-    .mqb.minus { background: #e2e8f0; color: #475569; }
-    .mqb.plus  { background: var(--primary); color: #fff; }
-    .mqb:disabled { opacity: .35; cursor: not-allowed; }
-    .menu-qty-val { font-size: 1rem; font-weight: 900; color: var(--primary); min-width: 22px; text-align: center; }
+    /* 메뉴 카드 순번별 상단 컬러 라인 — 인간적 차별화 */
+    .menu-card:nth-child(6n+1) { border-top: 4px solid #f9a825; }
+    .menu-card:nth-child(6n+2) { border-top: 4px solid #1565c0; }
+    .menu-card:nth-child(6n+3) { border-top: 4px solid #2e7d32; }
+    .menu-card:nth-child(6n+4) { border-top: 4px solid #b03a2e; }
+    .menu-card:nth-child(6n+5) { border-top: 4px solid #6a1b9a; }
+    .menu-card:nth-child(6n+0) { border-top: 4px solid #00838f; }
 
-    .menu-add-btn {
-      width: 100%; margin-top: 10px; padding: 8px;
-      border: 2px dashed #c7d2fe; border-radius: 8px;
-      background: transparent; color: var(--primary);
-      font-size: .82rem; font-weight: 800; cursor: pointer;
-      transition: .15s; font-family: inherit;
-    }
-    .menu-add-btn:hover { background: var(--primary-light); border-style: solid; }
+    .menu-name  { font-size: 18px; font-weight: 800; color: #0d47a1; margin-bottom: 5px; word-break: keep-all; }
+    .menu-price { font-size: 20px; font-weight: 900; color: #b03a2e; margin-bottom: 5px; }
+    .menu-stock { font-size: 16px; color: #555; }
+    .menu-stock.soldout { color: #c62828; font-weight: 700; }
 
-    /* ── CART ── */
+    .qty-ctrl {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 11px;
+    }
+    .qty-btn {
+      width: 40px; height: 40px;
+      border: none; border-radius: 8px;
+      font-size: 22px; font-weight: 900;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .qty-btn.minus { background: #dde3ea; color: #333; }
+    .qty-btn.plus  { background: #1565c0; color: #fff; }
+    .qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .qty-num { font-size: 22px; font-weight: 900; color: #1565c0; min-width: 26px; text-align: center; }
+
+    .add-btn {
+      width: 100%;
+      margin-top: 11px;
+      padding: 14px 6px;
+      border: 2px dashed #90caf9;
+      border-radius: 8px;
+      background: transparent;
+      color: #1565c0;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.12s;
+    }
+    .add-btn:hover { background: #e3f2fd; border-style: solid; }
+
+    /* ── 3단계: 장바구니 & 주문 (초록 계열) ── */
+    .step3 { background: #e8f5e9; border: 2px solid #2e7d32; }
+    .step3 .step-head { background: #2e7d32; color: #fff; }
+    .step3 .step-badge { color: #2e7d32; }
+
+    .cart-empty {
+      text-align: center;
+      padding: 22px 16px;
+      font-size: 17px;
+      color: #555;
+      background: #fff;
+      border-radius: 10px;
+      border: 2px dashed #a5d6a7;
+    }
+
     .cart-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #c8e6c9;
     }
     .cart-item:last-child { border-bottom: none; }
-    .cart-item-info { flex: 1; min-width: 0; }
-    .cart-item-name { font-size: .95rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cart-item-sub  { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 18px; font-weight: 800; }
+    .cart-item-sub  { font-size: 16px; color: #555; margin-top: 3px; }
     .cart-qty-wrap  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-    .cqb { width: 32px; height: 32px; border: none; border-radius: 8px; font-size: .95rem; font-weight: 900; cursor: pointer; }
-    .cqb.minus { background: #f1f5f9; color: #475569; }
-    .cqb.plus  { background: var(--primary); color: #fff; }
-    .cqb-num   { font-size: 1rem; font-weight: 900; min-width: 20px; text-align: center; }
-
-    .cart-total-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 14px; margin-top: 4px; border-top: 2px solid var(--border);
+    .cqb {
+      width: 40px; height: 40px;
+      border: none; border-radius: 8px;
+      font-size: 22px; font-weight: 900; cursor: pointer;
     }
-    .cart-total-label  { font-size: .9rem; color: var(--muted); font-weight: 700; }
-    .cart-total-amount { font-size: 1.3rem; font-weight: 900; color: var(--primary); }
+    .cqb.minus { background: #dde3ea; color: #333; }
+    .cqb.plus  { background: #2e7d32; color: #fff; }
+    .cqb-num   { font-size: 20px; font-weight: 900; min-width: 26px; text-align: center; }
 
-    .order-btn {
-      width: 100%; padding: 16px; border: none; border-radius: 14px;
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
-      color: #fff; font-size: 1rem; font-weight: 900;
-      cursor: pointer; margin-top: 14px; font-family: inherit; transition: .15s;
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0 4px;
+      border-top: 2px solid #a5d6a7;
+      margin-top: 4px;
     }
-    .order-btn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
-    .order-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+    .cart-total-label  { font-size: 19px; font-weight: 700; }
+    .cart-total-amount { font-size: 28px; font-weight: 900; color: #b03a2e; }
 
     .clear-btn {
-      border: none; background: none; color: var(--muted);
-      font-size: .82rem; font-weight: 700; cursor: pointer;
-      font-family: inherit; text-decoration: underline; margin-top: 6px; padding: 0;
+      background: none; border: none;
+      color: #888; font-size: 16px;
+      text-decoration: underline;
+      cursor: pointer; font-family: inherit; padding: 0; margin-top: 6px;
     }
 
-    /* ── STICKY CART BAR ── */
+    /* 주문하기 버튼 — 아주 크고 눈에 띄게 */
+    .order-btn {
+      width: 100%;
+      padding: 20px 16px;
+      margin-top: 18px;
+      border: none;
+      border-radius: 13px;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      background: #b03a2e;
+      color: #fff;
+      letter-spacing: -0.3px;
+      transition: opacity 0.15s, transform 0.12s;
+    }
+    .order-btn:active:not(:disabled) { transform: scale(0.98); opacity: 0.9; }
+    .order-btn:disabled { background: #bdbdbd; color: #fff; cursor: not-allowed; }
+
+    /* ── 4단계: 결제 정보 (보라 계열) ── */
+    .step4 { background: #f3e5f5; border: 2px solid #6a1b9a; }
+    .step4 .step-head { background: #6a1b9a; color: #fff; }
+    .step4 .step-badge { color: #6a1b9a; }
+
+    .pay-bank    { font-size: 16px; color: #5c3566; margin-bottom: 3px; }
+    .pay-acct    { font-size: 28px; font-weight: 900; color: #1a1a1a; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .pay-owner   { font-size: 17px; color: #5c3566; margin-bottom: 16px; }
+    .pay-notice  {
+      background: #fff;
+      border: 1px solid #ce93d8;
+      border-radius: 9px;
+      padding: 12px 14px;
+      font-size: 16px;
+      color: #4a148c;
+      margin-bottom: 14px;
+      line-height: 1.65;
+    }
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border: 2px solid #6a1b9a;
+      border-radius: 10px;
+      background: #fff;
+      color: #6a1b9a;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .copy-btn:active { background: #f3e5f5; }
+
+    /* ── 내 주문 현황 ── */
+    .my-order-block {
+      margin: 18px 0;
+      background: #fff;
+      border: 3px solid #37474f;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .my-order-head {
+      background: #37474f;
+      color: #fff;
+      padding: 15px 18px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+    .my-order-body { padding: 18px; }
+
+    .order-num-big  { font-size: 34px; font-weight: 900; color: #b03a2e; margin-bottom: 5px; }
+    .order-time-sm  { font-size: 16px; color: #777; margin-bottom: 16px; }
+
+    /* 상태 큰 표시 */
+    .status-box {
+      padding: 18px 16px;
+      border-radius: 11px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .st-주문접수 { background: #f5f5f5; color: #37474f; }
+    .st-입금확인 { background: #e3f2fd; color: #1565c0; }
+    .st-준비중  { background: #fff3e0; color: #bf360c; }
+    .st-준비완료 { background: #e8f5e9; color: #2e7d32; }
+    .st-수령완료 { background: #f5f5f5; color: #757575; }
+    .st-취소   { background: #fce4ec; color: #c62828; }
+
+    .ahead-box {
+      background: #fffde7;
+      border: 2px solid #f9a825;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #4e2800;
+      margin-bottom: 14px;
+    }
+
+    .order-items {
+      font-size: 17px;
+      color: #333;
+      line-height: 2;
+      padding: 14px 0;
+      border-top: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 14px;
+    }
+    .order-total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: 900;
+      color: #b03a2e;
+      margin-bottom: 16px;
+    }
+
+    .act-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .act-btn {
+      padding: 13px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .act-blue { background: #e3f2fd; color: #1565c0; }
+    .act-gray { background: #f0f0f0; color: #555; }
+
+    /* ── 알림 박스 ── */
+    .notice-ok {
+      background: #e8f5e9;
+      border: 2px solid #66bb6a;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 17px;
+      color: #1b5e20;
+      line-height: 1.7;
+      margin-top: 14px;
+    }
+    .notice-err {
+      background: #fce4ec;
+      border: 2px solid #ef9a9a;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 17px;
+      color: #880e4f;
+      line-height: 1.7;
+      margin-top: 14px;
+    }
+
+    /* ── 빈 상태 ── */
+    .empty-box {
+      text-align: center;
+      padding: 22px;
+      color: #777;
+      font-size: 17px;
+      background: #fafafa;
+      border-radius: 10px;
+      border: 2px dashed #ddd;
+    }
+
+    /* ── 하단 장바구니 바 ── */
     .cart-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-      padding: 12px 16px;
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-      background: linear-gradient(135deg, #312e81, #4f46e5);
-      box-shadow: 0 -4px 20px rgba(0,0,0,.18);
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      padding: 14px 18px;
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      background: #3e2000;
+      box-shadow: 0 -3px 16px rgba(0,0,0,0.22);
       display: none;
     }
     .cart-bar.visible { display: block; }
     .cart-bar-inner {
-      max-width: 640px; margin: 0 auto;
-      display: flex; align-items: center; gap: 12px;
+      max-width: 580px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
     .cart-bar-info   { flex: 1; color: #fff; }
-    .cart-bar-count  { font-size: .8rem; color: rgba(255,255,255,.75); }
-    .cart-bar-total  { font-size: 1.05rem; font-weight: 900; }
+    .cart-bar-count  { font-size: 16px; color: rgba(255,255,255,0.85); }
+    .cart-bar-total  { font-size: 20px; font-weight: 900; }
     .cart-bar-btn {
-      border: none; border-radius: 12px; padding: 12px 20px;
-      background: #fff; color: var(--primary);
-      font-size: .95rem; font-weight: 900; cursor: pointer; font-family: inherit; white-space: nowrap;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 22px;
+      background: #b03a2e;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
     }
 
-    /* ── PAYMENT ── */
-    .payment-account { font-size: 1.15rem; font-weight: 900; color: var(--text); margin: 6px 0 4px; }
-    .payment-owner   { font-size: .88rem; color: var(--muted); margin-bottom: 12px; }
-    .copy-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      border: none; border-radius: 8px; padding: 9px 14px;
-      background: #eef2ff; color: var(--primary);
-      font-size: .84rem; font-weight: 800; cursor: pointer; font-family: inherit;
+    /* ── 반응형 ── */
+    @media (max-width: 360px) {
+      body { font-size: 17px; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .step-title { font-size: 18px; }
+      .order-btn { font-size: 20px; padding: 18px 14px; }
     }
-    .copy-btn:hover { background: #e0e7ff; }
+    @media (min-width: 520px) {
+      .menu-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
 
-    /* ── MY ORDER ── */
-    .order-card {
-      border: 2px solid var(--border); border-radius: 14px; padding: 16px;
+    /* ── 진행 스텝 표시 ── */
+    .progress-steps {
+      display: flex;
+      align-items: flex-start;
+      margin: 0 0 16px;
     }
-    .order-card.active { border-color: #c7d2fe; background: #fafafe; }
-    .order-card.ready  { border-color: #6ee7b7; background: #f0fdf4; }
-    .order-header {
-      display: flex; justify-content: space-between;
-      align-items: flex-start; gap: 10px; margin-bottom: 12px;
+    .ps-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      position: relative;
     }
-    .order-number { font-size: 1.3rem; font-weight: 900; }
-    .order-time   { font-size: .78rem; color: var(--muted); margin-top: 2px; }
-
-    /* Status steps */
-    .status-steps { display: flex; align-items: flex-start; margin: 12px 0 4px; }
-    .step {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 4px; flex: 1; position: relative;
+    .ps-item::after {
+      content: '';
+      position: absolute;
+      top: 11px; left: 50%; right: -50%;
+      height: 3px;
+      background: #ddd;
+      z-index: 0;
     }
-    .step::after {
-      content: ''; position: absolute; top: 11px;
-      left: 50%; right: -50%; height: 2px; background: var(--border); z-index: 0;
-    }
-    .step:last-child::after { display: none; }
-    .step.done::after { background: var(--primary); }
-    .step-dot {
-      width: 22px; height: 22px; border-radius: 50%;
-      border: 2px solid var(--border); background: #fff; z-index: 1;
+    .ps-item:last-child::after { display: none; }
+    .ps-item.done::after { background: #2e7d32; }
+    .ps-dot {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 3px solid #ddd;
+      background: #fff;
+      z-index: 1;
       display: flex; align-items: center; justify-content: center;
-      font-size: .6rem; font-weight: 800;
+      font-size: 11px; font-weight: 900;
     }
-    .step.done .step-dot    { background: var(--primary); border-color: var(--primary); color: #fff; }
-    .step.current .step-dot { background: #fff; border-color: var(--primary); border-width: 3px; }
-    .step-label {
-      font-size: .6rem; color: var(--muted); font-weight: 700;
+    .ps-item.done .ps-dot    { background: #2e7d32; border-color: #2e7d32; color: #fff; }
+    .ps-item.current .ps-dot { background: #fff; border-color: #b03a2e; border-width: 3px; }
+    .ps-label {
+      font-size: 14px; color: #888; font-weight: 700;
       text-align: center; white-space: nowrap;
+      line-height: 1.3;
     }
-    .step.current .step-label { color: var(--primary); font-weight: 900; }
+    .ps-item.done .ps-label    { color: #2e7d32; }
+    .ps-item.current .ps-label { color: #b03a2e; font-weight: 900; }
 
-    .ahead-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: #eef2ff; color: #4338ca;
-      border-radius: 8px; padding: 6px 10px;
-      font-size: .82rem; font-weight: 800; margin-top: 10px;
+    /* ── 토스트 알림 ── */
+    .toast {
+      position: fixed;
+      bottom: 80px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(30,30,30,0.9);
+      color: #fff;
+      padding: 13px 22px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 700;
+      z-index: 9000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      white-space: nowrap;
     }
-    .order-items-list {
-      font-size: .84rem; color: #334155; line-height: 1.7;
-      border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px;
-    }
-    .order-total-amt {
-      display: flex; justify-content: space-between;
-      margin-top: 8px; font-size: .9rem; font-weight: 800; color: var(--primary);
-    }
-    .order-actions {
-      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
-    }
-    .action-btn {
-      border: none; border-radius: 8px; padding: 9px 14px;
-      font-size: .84rem; font-weight: 800; cursor: pointer; font-family: inherit;
-    }
-    .action-blue { background: #dbeafe; color: #1d4ed8; }
-    .action-gray { background: #f1f5f9; color: #475569; }
-
-    /* Status badges */
-    .sbadge {
-      display: inline-block; padding: 4px 10px;
-      border-radius: 999px; font-size: .75rem; font-weight: 900;
-    }
-    .sbadge-주문접수 { background: #f1f5f9; color: #475569; }
-    .sbadge-입금확인 { background: #dbeafe; color: #1e40af; }
-    .sbadge-준비중  { background: #fef3c7; color: #92400e; }
-    .sbadge-준비완료 { background: #d1fae5; color: #065f46; }
-    .sbadge-수령완료 { background: #f1f5f9; color: #6b7280; }
-    .sbadge-취소    { background: #fee2e2; color: #991b1b; }
-
-    /* Notice / warn boxes */
-    .notice-box {
-      background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
-      padding: 12px 14px; border-radius: 12px;
-      font-size: .86rem; line-height: 1.6; margin-top: 10px;
-    }
-    .warn-box {
-      background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
-      padding: 12px 14px; border-radius: 12px;
-      font-size: .86rem; line-height: 1.6; margin-top: 10px;
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
-    /* Empty */
-    .empty-box {
-      text-align: center; padding: 24px 16px;
-      color: var(--muted); font-size: .88rem;
-      border: 1px dashed #cbd5e1; border-radius: 12px; background: #fafafa;
-    }
-
-    /* ── READY ALERT ── */
-    .ready-alert-overlay{
-      position: fixed; inset: 0; z-index: 9999;
-      display: none; align-items: center; justify-content: center;
+    /* ── 준비완료 팝업 ── */
+    .ready-overlay {
+      position: fixed;
+      inset: 0; z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
       padding: 24px;
-      background: rgba(249, 115, 22, .92);
       animation: readyFlash 0.8s infinite;
-      backdrop-filter: blur(2px);
     }
-    .ready-alert-overlay.show{ display: flex; }
-
-    .ready-alert-box{
-      width: min(92vw, 680px);
+    .ready-overlay.show { display: flex; }
+    .ready-box {
+      width: min(92vw, 580px);
       text-align: center;
-      background: rgba(255,255,255,.18);
-      border: 3px solid rgba(255,255,255,.78);
-      border-radius: 24px;
-      padding: 36px 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      background: rgba(255,255,255,0.16);
+      border: 3px solid rgba(255,255,255,0.8);
+      border-radius: 22px;
+      padding: 38px 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     }
-
-    .ready-alert-title{
-      font-size: clamp(2rem, 8vw, 3.6rem);
-      line-height: 1.25;
+    .ready-title {
+      font-size: clamp(2rem, 8vw, 3.4rem);
       font-weight: 900;
       color: #fff;
-      text-shadow: 0 3px 14px rgba(0,0,0,.28);
+      line-height: 1.3;
       word-break: keep-all;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
-
-    .ready-alert-sub{
+    .ready-sub {
       margin-top: 14px;
-      font-size: clamp(1rem, 3.6vw, 1.35rem);
-      font-weight: 800;
-      color: rgba(255,255,255,.96);
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
+      font-weight: 700;
+      color: rgba(255,255,255,0.95);
     }
-
-    @keyframes readyFlash{
-      0%,100% { background: rgba(249, 115, 22, .92); }
-      50%     { background: rgba(255, 237, 213, .98); }
+    @keyframes readyFlash {
+      0%,100% { background: rgba(176,58,46,0.93); }
+      50%      { background: rgba(255,243,176,0.97); }
     }
   </style>
 </head>
 <body>
 
-  <div class="ready-alert-overlay" id="readyAlertOverlay">
-    <div class="ready-alert-box">
-      <div class="ready-alert-title">주문하신 메뉴<br>준비되었습니다.</div>
-      <div class="ready-alert-sub">주문하신 부스로 오세요</div>
+  <!-- 토스트 알림 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- 준비완료 팝업 -->
+  <div class="ready-overlay" id="readyAlertOverlay">
+    <div class="ready-box">
+      <div class="ready-title">주문하신 물건이<br>준비되었습니다!</div>
+      <div class="ready-sub">부스로 와서 물건을 받아가세요</div>
     </div>
   </div>
 
-  <!-- STICKY CART BAR -->
+  <!-- 하단 장바구니 바 -->
   <div class="cart-bar" id="cartBar">
     <div class="cart-bar-inner">
       <div class="cart-bar-info">
-        <div class="cart-bar-count" id="cartBarCount">0개 항목</div>
+        <div class="cart-bar-count" id="cartBarCount">0개 선택</div>
         <div class="cart-bar-total" id="cartBarTotal">0원</div>
       </div>
-      <button class="cart-bar-btn" onclick="scrollToCart()">주문하기 →</button>
+      <button class="cart-bar-btn" onclick="scrollToCart()">주문하기 ↓</button>
     </div>
   </div>
 
-  <!-- HEADER -->
+  <!-- 헤더 -->
   <div class="header">
-    <div class="header-inner">
-      <div>
-        <div class="header-booth" id="headerBoothName">🛍️ 바자회 주문</div>
-        <div class="header-sub">QR 입장 · 줄 없이 주문</div>
-      </div>
-      <div id="headerStatusChip"></div>
-    </div>
+    <div class="header-title" id="headerBoothName">🛒 바자회 주문</div>
+    <div class="header-sub">아래 순서대로 따라하시면 됩니다</div>
   </div>
 
-  <div class="container">
+  <!-- 운영 상태 배너 -->
+  <div id="statusBanner" style="display:none;"></div>
 
-    <!-- STATUS BANNER -->
-    <div id="statusBanner" style="display:none;"></div>
+  <div class="wrap">
 
-    <!-- CUSTOMER NAME -->
-    <div class="name-card">
-      <div class="name-title">주문자 / 입금자 이름 <span class="req-badge">필수</span></div>
-      <div class="name-desc">계좌이체 시 <strong>입금자 이름과 동일하게</strong> 입력해 주세요.</div>
-      <input type="text" id="customerName" class="name-input"
-        placeholder="이곳에 이름을 입력하세요" maxlength="20" autocomplete="off" />
-    </div>
-
-    <!-- MENU -->
-    <div class="card">
-      <div class="section-label">🍽️ 메뉴판</div>
-      <div id="menuList" class="menu-grid"></div>
-    </div>
-
-    <!-- CART -->
-    <div class="card" id="cartSection">
-      <div class="section-label">🧺 장바구니</div>
-      <div id="cartItems"></div>
-      <div id="cartEmpty" class="empty-box">메뉴판에서 원하는 메뉴를 선택해 주세요.</div>
-      <div id="cartTotalRow" style="display:none;">
-        <div class="cart-total-row">
-          <div class="cart-total-label">합계</div>
-          <div class="cart-total-amount" id="totalAmount">0원</div>
-        </div>
-        <div style="text-align:right; margin-top:6px;">
-          <button class="clear-btn" onclick="clearCart()">장바구니 비우기</button>
-        </div>
+    <!-- 1단계: 이름 입력 -->
+    <div class="step-block step1">
+      <div class="step-head">
+        <div class="step-badge">1</div>
+        <div class="step-title">이름을 써주세요</div>
       </div>
-      <button class="order-btn" id="submitBtn" onclick="submitOrder()">메뉴를 선택해 주세요</button>
-      <div id="orderNotice"></div>
+      <div class="step-body">
+        <div class="name-guide">
+          물건을 사시는 분 또는 돈을 보내시는 분 이름을<br>
+          <strong>정확하게</strong> 입력해 주세요.
+        </div>
+        <input type="text" id="customerName" class="name-input"
+          placeholder="예) 홍길동" maxlength="20" autocomplete="off" />
+        <div class="name-ok" id="nameOkMsg">✅ 이름이 입력되었습니다</div>
+      </div>
     </div>
 
-    <!-- PAYMENT INFO -->
-    <div class="card">
-      <div class="section-label">💳 입금 계좌</div>
-      <div id="paymentInfo">불러오는 중...</div>
+    <!-- 2단계: 메뉴 선택 -->
+    <div class="step-block step2">
+      <div class="step-head">
+        <div class="step-badge">2</div>
+        <div class="step-title">원하는 물건을 골라주세요</div>
+      </div>
+      <div class="step-body">
+        <div class="step2-guide">물건을 누르면 장바구니에 담깁니다.</div>
+        <div id="menuList" class="menu-grid"></div>
+      </div>
     </div>
 
-    <!-- MY ORDER -->
-    <div class="card">
-      <div class="section-label">📋 내 주문 현황</div>
-      <div id="myOrderBox"></div>
+    <!-- 3단계: 확인 및 주문 -->
+    <div class="step-block step3" id="cartSection">
+      <div class="step-head">
+        <div class="step-badge">3</div>
+        <div class="step-title">담은 물건을 확인하고 주문하세요</div>
+      </div>
+      <div class="step-body">
+        <div id="cartItems"></div>
+        <div id="cartEmpty" class="cart-empty">2단계에서 물건을 담으면 여기에 표시됩니다</div>
+        <div id="cartTotalRow" style="display:none;">
+          <div class="cart-total">
+            <div class="cart-total-label">합계 금액</div>
+            <div class="cart-total-amount" id="totalAmount">0원</div>
+          </div>
+          <div style="text-align:right; margin-top:5px;">
+            <button class="clear-btn" onclick="clearCart()">장바구니 비우기</button>
+          </div>
+        </div>
+        <button class="order-btn" id="submitBtn" onclick="submitOrder()">물건을 먼저 골라주세요</button>
+        <div id="orderNotice"></div>
+      </div>
     </div>
 
-  </div>
+    <!-- 4단계: 결제 정보 -->
+    <div class="step-block step4">
+      <div class="step-head">
+        <div class="step-badge">4</div>
+        <div class="step-title">이 계좌로 결제해 주세요</div>
+      </div>
+      <div class="step-body">
+        <div id="paymentInfo">불러오는 중...</div>
+      </div>
+    </div>
+
+    <!-- 내 주문 현황 -->
+    <div class="my-order-block">
+      <div class="my-order-head">📦 내 주문 현황</div>
+      <div class="my-order-body">
+        <div id="myOrderBox"></div>
+      </div>
+    </div>
+
+  </div><!-- /wrap -->
 
   <script>
     const firebaseConfig = {
@@ -467,22 +702,20 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const params = new URLSearchParams(location.search);
-    const boothId     = params.get("booth")   || "main";
-    const boothPrefix = params.get("booth")  || (boothId !== "main" ? boothId.toUpperCase() : "A");
+    const params      = new URLSearchParams(location.search);
+    const boothId     = params.get("booth")  || "main";
+    const boothPrefix = params.get("prefix") || (boothId !== "main" ? boothId.toUpperCase() : "A");
 
-    const MENU_PATH    = `settings/menu/${boothId}`;
-    const PAYMENT_PATH = `settings/payment/${boothId}`;
-    const CONTROL_PATH = `settings/boothControl/${boothId}`;
+    const MENU_PATH       = `settings/menu/${boothId}`;
+    const PAYMENT_PATH    = `settings/payment/${boothId}`;
+    const CONTROL_PATH    = `settings/boothControl/${boothId}`;
     const BOOTH_INFO_PATH = `settings/boothInfo/${boothId}`;
-    const ORDERS_PATH  = `orders/${boothId}`;
+    const ORDERS_PATH     = `orders/${boothId}`;
+    const COUNTER_PATH    = `settings/orderCounter/${boothId}`;
 
-    // 판매자 리셋 시 이 경로를 0 또는 null로 초기화하면 다음 주문이 A001부터 다시 시작됩니다.
-    const COUNTER_PATH = `settings/orderCounter/${boothId}`;
-
-    const LAST_ORDER_KEY = `bazaar_last_order_${boothId}`;
+    const LAST_ORDER_KEY    = `bazaar_last_order_${boothId}`;
     const CUSTOMER_NAME_KEY = `bazaar_customer_name_${boothId}`;
-    const READY_ALERT_KEY = `bazaar_ready_alert_${boothId}`;
+    const READY_ALERT_KEY   = `bazaar_ready_alert_${boothId}`;
 
     let menuMap      = {};
     let paymentInfo  = {};
@@ -490,162 +723,153 @@
     let orders       = [];
     let cart         = {};
     let myOrderId    = localStorage.getItem(LAST_ORDER_KEY) || "";
-    let readyAudioCtx = null;
+    let readyAudioCtx  = null;
     let readyAlertTimer = null;
-    let readyBellTimer = null;
+    let readyBellTimer  = null;
 
-    function escapeHtml(str=""){
+    /* ── 토스트 ── */
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
+    }
+
+    function escapeHtml(str = "") {
       return String(str)
         .replaceAll("&","&amp;").replaceAll("<","&lt;")
         .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
     }
-    function currency(n){ return Number(n||0).toLocaleString()+"원"; }
+    function currency(n) { return Number(n || 0).toLocaleString() + "원"; }
 
-    function formatDateTime(ts){
-      if(!ts) return "";
+    function formatDateTime(ts) {
+      if (!ts) return "";
       const d = new Date(ts);
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ` +
+             `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
     }
 
-    function initReadyAudio(){
+    /* ── 오디오 ── */
+    function initReadyAudio() {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if(!AC || readyAudioCtx) return;
+      if (!AC || readyAudioCtx) return;
       readyAudioCtx = new AC();
     }
-
-    function unlockReadyAudio(){
+    function unlockReadyAudio() {
       initReadyAudio();
-      if(readyAudioCtx && readyAudioCtx.state === "suspended"){
-        readyAudioCtx.resume().catch(()=>{});
-      }
+      if (readyAudioCtx && readyAudioCtx.state === "suspended")
+        readyAudioCtx.resume().catch(() => {});
     }
-
-    ["click","touchstart","keydown"].forEach(evt => {
-      document.addEventListener(evt, unlockReadyAudio, { once: true, passive: true });
-    });
-
-    function playReadyBell(){
+    ["click","touchstart","keydown"].forEach(evt =>
+      document.addEventListener(evt, unlockReadyAudio, { once: true, passive: true })
+    );
+    function playReadyBell() {
       initReadyAudio();
-      if(!readyAudioCtx) return;
-
-      if(readyAudioCtx.state === "suspended"){
-        readyAudioCtx.resume().catch(()=>{});
-      }
-
-      const now = readyAudioCtx.currentTime;
+      if (!readyAudioCtx) return;
+      if (readyAudioCtx.state === "suspended") readyAudioCtx.resume().catch(() => {});
+      const now   = readyAudioCtx.currentTime;
       const tones = [
         { t: 0.00, f: 1318.51, d: 0.18 },
         { t: 0.20, f: 1567.98, d: 0.18 },
         { t: 0.42, f: 2093.00, d: 0.32 }
       ];
-
-      tones.forEach(({t, f, d}) => {
-        const osc = readyAudioCtx.createOscillator();
+      tones.forEach(({ t, f, d }) => {
+        const osc  = readyAudioCtx.createOscillator();
         const gain = readyAudioCtx.createGain();
-
         osc.type = "sine";
         osc.frequency.setValueAtTime(f, now + t);
-
         gain.gain.setValueAtTime(0.0001, now + t);
         gain.gain.exponentialRampToValueAtTime(0.18, now + t + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + t + d);
-
         osc.connect(gain);
         gain.connect(readyAudioCtx.destination);
-
         osc.start(now + t);
         osc.stop(now + t + d + 0.02);
       });
     }
-
-    function stopReadyAlert(){
+    function stopReadyAlert() {
       clearTimeout(readyAlertTimer);
       clearInterval(readyBellTimer);
       readyAlertTimer = null;
-      readyBellTimer = null;
+      readyBellTimer  = null;
       document.getElementById("readyAlertOverlay").classList.remove("show");
     }
-
-    function startReadyAlert(){
+    function startReadyAlert() {
       stopReadyAlert();
       document.getElementById("readyAlertOverlay").classList.add("show");
       playReadyBell();
-      readyBellTimer = setInterval(playReadyBell, 4000);
+      readyBellTimer  = setInterval(playReadyBell, 4000);
       readyAlertTimer = setTimeout(stopReadyAlert, 30000);
     }
-
-    function maybeShowReadyAlert(){
-      if(!myOrderId) return;
+    function maybeShowReadyAlert() {
+      if (!myOrderId) return;
       const myOrder = orders.find(o => o.id === myOrderId);
-      if(!myOrder || myOrder.status !== "준비완료") return;
-
+      if (!myOrder || myOrder.status !== "준비완료") return;
       const token = `${myOrderId}_준비완료_${myOrder.recallAt || 0}`;
-      if(localStorage.getItem(READY_ALERT_KEY) === token) return;
-
+      if (localStorage.getItem(READY_ALERT_KEY) === token) return;
       localStorage.setItem(READY_ALERT_KEY, token);
       startReadyAlert();
     }
 
-    function parseTimeToMinutes(hhmm){
-      if(!hhmm||!hhmm.includes(":")) return null;
-      const [h,m] = hhmm.split(":").map(Number);
-      if(Number.isNaN(h)||Number.isNaN(m)) return null;
-      return h*60+m;
+    /* ── 시간 파싱 ── */
+    function parseTimeToMinutes(hhmm) {
+      if (!hhmm || !hhmm.includes(":")) return null;
+      const [h, m] = hhmm.split(":").map(Number);
+      if (Number.isNaN(h) || Number.isNaN(m)) return null;
+      return h * 60 + m;
     }
-    function currentMinutes(){
+    function currentMinutes() {
       const now = new Date();
-      return now.getHours()*60+now.getMinutes();
+      return now.getHours() * 60 + now.getMinutes();
     }
 
-    // ── 이름 입력 ──
-    function loadCustomerName(){
+    /* ── 이름 ── */
+    function loadCustomerName() {
       const input = document.getElementById("customerName");
       input.value = localStorage.getItem(CUSTOMER_NAME_KEY) || "";
       updateNameStyle();
     }
-    function saveCustomerName(){
+    function saveCustomerName() {
       localStorage.setItem(CUSTOMER_NAME_KEY, document.getElementById("customerName").value.trim());
       updateNameStyle();
       updateSubmitButtonState();
       renderMenus();
     }
-    function updateNameStyle(){
-      const input = document.getElementById("customerName");
-      input.classList.toggle("filled", !!input.value.trim());
+    function updateNameStyle() {
+      const input  = document.getElementById("customerName");
+      const filled = !!input.value.trim();
+      input.classList.toggle("filled", filled);
+      const msg = document.getElementById("nameOkMsg");
+      if (msg) msg.classList.toggle("show", filled);
     }
     document.getElementById("customerName").addEventListener("input", saveCustomerName);
 
-    // ── 주문 가능 여부 ──
-    function getOrderAvailability(control=boothControl){
+    /* ── 주문 가능 여부 ── */
+    function getOrderAvailability(control = boothControl) {
       const mode = control.mode || "auto";
-      if(mode==="open")   return {canOrder:true,  title:"주문 가능",    desc:control.message||"지금 주문할 수 있습니다."};
-      if(mode==="paused") return {canOrder:false,  title:"잠시 중지",   desc:control.message||"잠시 후 다시 시도해 주세요."};
-      if(mode==="closed") return {canOrder:false,  title:"주문 마감",   desc:control.message||"지금은 주문을 받지 않습니다."};
+      if (mode === "open")   return { canOrder: true,  title: "주문 가능",   desc: control.message || "지금 주문하실 수 있습니다." };
+      if (mode === "paused") return { canOrder: false, title: "잠시 대기",   desc: control.message || "잠시 후 다시 시도해 주세요." };
+      if (mode === "closed") return { canOrder: false, title: "주문 마감",   desc: control.message || "현재 주문을 받지 않습니다." };
 
       const openMin  = parseTimeToMinutes(control.openAt);
       const closeMin = parseTimeToMinutes(control.closeAt);
       const nowMin   = currentMinutes();
 
-      if(openMin!==null  && nowMin<openMin)  return {canOrder:false, title:`오픈 전 (${control.openAt})`,  desc:control.message||"오픈 시간 이후 주문 가능합니다."};
-      if(closeMin!==null && nowMin>=closeMin) return {canOrder:false, title:`마감 (${control.closeAt})`,   desc:control.message||"주문이 마감되었습니다."};
-      return {canOrder:true, title:"주문 가능", desc:control.message||"메뉴를 선택해서 주문해 주세요."};
+      if (openMin  !== null && nowMin < openMin)  return { canOrder: false, title: `아직 시작 전 (${control.openAt})`,  desc: control.message || "시작 시간 이후 주문 가능합니다." };
+      if (closeMin !== null && nowMin >= closeMin) return { canOrder: false, title: `주문 마감 (${control.closeAt})`,    desc: control.message || "주문이 마감되었습니다." };
+      return { canOrder: true, title: "주문 가능", desc: control.message || "메뉴를 선택해서 주문해 주세요." };
     }
 
-    function renderHeaderStatus(){
-      const info = getOrderAvailability();
-      const chipEl   = document.getElementById("headerStatusChip");
+    /* ── 헤더/배너 ── */
+    function renderHeaderStatus() {
+      const info     = getOrderAvailability();
       const bannerEl = document.getElementById("statusBanner");
-
-      let chipCls="chip-open", dotCls="dot-open";
-      if(!info.canOrder && info.title.includes("중지")){ chipCls="chip-paused"; dotCls="dot-paused"; }
-      if(!info.canOrder && !info.title.includes("중지")){ chipCls="chip-closed"; dotCls="dot-closed"; }
-
-      chipEl.innerHTML = `<span class="status-chip ${chipCls}"><span class="dot ${dotCls}"></span>${escapeHtml(info.title)}</span>`;
-
-      if(!info.canOrder){
-        const bc = info.title.includes("중지") ? "banner-warn" : "banner-closed";
-        const ic = info.title.includes("중지") ? "⏸️" : "🔒";
-        bannerEl.innerHTML = `<div class="banner ${bc}"><span class="banner-icon">${ic}</span><span><strong>${escapeHtml(info.title)}</strong> — ${escapeHtml(info.desc)}</span></div>`;
+      if (!info.canOrder) {
+        const cls = info.title.includes("대기") ? "s-paused" : "s-closed";
+        bannerEl.innerHTML = `<div class="status-banner ${cls}">⚠️ ${escapeHtml(info.title)} — ${escapeHtml(info.desc)}</div>`;
         bannerEl.style.display = "block";
       } else {
         bannerEl.style.display = "none";
@@ -653,204 +877,190 @@
       updateSubmitButtonState();
     }
 
-    function renderPaymentInfo(){
+    /* ── 결제 정보 ── */
+    function renderPaymentInfo() {
       const el = document.getElementById("paymentInfo");
-      const bn = paymentInfo.bankName     || "";
-      const an = paymentInfo.accountNumber|| "";
-      const ao = paymentInfo.accountOwner || paymentInfo.accountHolder || "";
-      const nt = paymentInfo.notice       || "";
-
-      if(!bn && !an && !ao){
-        el.innerHTML = `<div class="empty-box">아직 입금 안내가 등록되지 않았습니다.</div>`;
+      const bn = paymentInfo.bankName      || "";
+      const an = paymentInfo.accountNumber || "";
+      const ao = paymentInfo.accountOwner  || paymentInfo.accountHolder || "";
+      const nt = paymentInfo.notice        || "";
+      if (!bn && !an && !ao) {
+        el.innerHTML = `<div class="empty-box">결제 안내가 아직 등록되지 않았습니다.</div>`;
         return;
       }
-
       const acctText = `${bn} ${an}`;
       el.innerHTML = `
-        <div class="payment-account">${escapeHtml(bn)} <strong>${escapeHtml(an)}</strong></div>
-        <div class="payment-owner">예: ${escapeHtml(ao)}</div>
-        ${nt ? `<div class="banner banner-notice" style="margin-bottom:12px;"><span class="banner-icon">ℹ️</span><span>${escapeHtml(nt)}</span></div>` : ""}
-        <button class="copy-btn" onclick="copyText('${escapeHtml(acctText)}')">📋 계좌번호 복사</button>
+        <div class="pay-bank">${escapeHtml(bn)}</div>
+        <div class="pay-acct">${escapeHtml(an)}</div>
+        <div class="pay-owner">통장 이름: ${escapeHtml(ao)}</div>
+        ${nt ? `<div class="pay-notice">${escapeHtml(nt)}</div>` : ""}
+        <button class="copy-btn" onclick="copyText('${escapeHtml(acctText)}')">📋 계좌번호 복사하기</button>
       `;
     }
 
-    function copyText(text){
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text)
-      .then(() => alert("복사되었습니다."))
-      .catch(() => fallbackCopyText(text));
-  } else {
-    fallbackCopyText(text);
-  }
-}
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => alert("복사되었습니다.")).catch(() => fallbackCopyText(text));
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+    function fallbackCopyText(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly","");
+      ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      try { document.execCommand("copy") ? alert("복사되었습니다.") : alert("복사에 실패했습니다."); }
+      catch { alert("복사에 실패했습니다."); }
+      document.body.removeChild(ta);
+    }
 
-function fallbackCopyText(text){
-  const ta = document.createElement("textarea");
-  ta.value = text;
-  ta.setAttribute("readonly", "");
-  ta.style.position = "fixed";
-  ta.style.top = "-9999px";
-  ta.style.left = "-9999px";
-  document.body.appendChild(ta);
+    /* ── 메뉴 렌더링 ── */
+    function getCartQty(menuId) { return Number(cart[menuId] || 0); }
 
-  ta.focus();
-  ta.select();
-  ta.setSelectionRange(0, ta.value.length);
-
-  try {
-    const ok = document.execCommand("copy");
-    if (ok) alert("복사되었습니다.");
-    else alert("복사에 실패했습니다.");
-  } catch (e) {
-    alert("복사에 실패했습니다.");
-  }
-
-  document.body.removeChild(ta);
-}
-
-
-    // ── 메뉴 ──
-    function getCartQty(menuId){ return Number(cart[menuId]||0); }
-
-    function renderMenus(){
+    function renderMenus() {
       const wrap  = document.getElementById("menuList");
       const menus = Object.entries(menuMap)
-        .filter(([_,m])=>m && m.active!==false)
-        .sort((a,b)=>String(a[1].name||"").localeCompare(String(b[1].name||""),"ko"));
+        .filter(([_, m]) => m && m.active !== false)
+        .sort((a, b) => String(a[1].name || "").localeCompare(String(b[1].name || ""), "ko"));
 
-      if(!menus.length){
-        wrap.innerHTML=`<div class="empty-box" style="grid-column:1/-1">현재 주문 가능한 메뉴가 없습니다.</div>`;
+      if (!menus.length) {
+        wrap.innerHTML = `<div class="empty-box" style="grid-column:1/-1">현재 주문 가능한 물건이 없습니다.</div>`;
         updateCartDisplay();
         return;
       }
 
       const canOrder = getOrderAvailability().canOrder;
-      const hasName = !!document.getElementById("customerName").value.trim();
-      wrap.innerHTML = menus.map(([key,menu])=>{
-        const qty     = getCartQty(key);
-        const stock   = Number(menu.stock||0);
-        const soldOut = stock <= 0;
-        const disabled = soldOut || !canOrder;
+      const hasName  = !!document.getElementById("customerName").value.trim();
+
+      wrap.innerHTML = menus.map(([key, menu]) => {
+        const qty       = getCartQty(key);
+        const stock     = Number(menu.stock || 0);
+        const soldOut   = stock <= 0;
+        const disabled  = soldOut || !canOrder;
         const nameLocked = !hasName && !disabled;
-        const inCart  = qty > 0;
+        const inCart    = qty > 0;
 
         const stockHtml = soldOut
-          ? `<span class="menu-card-stock soldout">품절</span>`
+          ? `<div class="menu-stock soldout">품절</div>`
           : (!canOrder
-            ? `<span class="menu-card-stock soldout">주문 불가</span>`
-            : `<span class="menu-card-stock">재고 ${stock}개</span>`);
+            ? `<div class="menu-stock soldout">주문 불가</div>`
+            : `<div class="menu-stock">남은 수량 ${stock}개</div>`);
 
         let ctrlHtml = "";
-        if(!disabled && !nameLocked){
-          if(inCart){
+        if (!disabled && !nameLocked) {
+          if (inCart) {
             ctrlHtml = `
-              <div class="menu-qty-ctrl">
-                <button class="mqb minus" onclick="event.stopPropagation();changeQty('${key}',-1)" ${qty<=0?"disabled":""}>−</button>
-                <span class="menu-qty-val">${qty}</span>
-                <button class="mqb plus"  onclick="event.stopPropagation();changeQty('${key}',1)"  ${qty>=stock?"disabled":""}>+</button>
+              <div class="qty-ctrl">
+                <button class="qty-btn minus" onclick="event.stopPropagation();changeQty('${key}',-1)" ${qty<=0?"disabled":""}>−</button>
+                <span class="qty-num">${qty}</span>
+                <button class="qty-btn plus"  onclick="event.stopPropagation();changeQty('${key}',1)"  ${qty>=stock?"disabled":""}>+</button>
               </div>`;
           } else {
-            ctrlHtml = `<button class="menu-add-btn" onclick="event.stopPropagation();addToCart('${key}')">+ 담기</button>`;
+            ctrlHtml = `<button class="add-btn" onclick="event.stopPropagation();addToCart('${key}')">+ 담기</button>`;
           }
         }
 
+        const clickAttr = nameLocked
+          ? `onclick="focusNameInput()"`
+          : (!disabled && !inCart ? `onclick="addToCart('${key}')"` : "");
+
         return `
-          <div class="menu-card ${disabled?"disabled":""} ${nameLocked?"name-locked":""} ${inCart?"in-cart":""}"
-               ${nameLocked?`onclick="focusNameInput()"`:(!disabled&&!inCart?`onclick="addToCart('${key}')"`:"")} >
-            <div class="menu-card-name">${escapeHtml(menu.name)}</div>
-            <div class="menu-card-price">${currency(menu.price)}</div>
+          <div class="menu-card ${disabled?"disabled":""} ${nameLocked?"name-locked":""} ${inCart?"in-cart":""}" ${clickAttr}>
+            <div class="menu-name">${escapeHtml(menu.name)}</div>
+            <div class="menu-price">${currency(menu.price)}</div>
             ${stockHtml}
             ${ctrlHtml}
           </div>`;
       }).join("");
+
       updateCartDisplay();
     }
 
-    function focusNameInput(){
+    function focusNameInput() {
       const input = document.getElementById("customerName");
-      input.scrollIntoView({ behavior:"smooth", block:"center" });
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
       input.focus();
       input.classList.remove("prompt");
-      void input.offsetWidth; // 애니메이션 재시작
+      void input.offsetWidth;
       input.classList.add("prompt");
       setTimeout(() => input.classList.remove("prompt"), 1650);
+      showToast("👆 먼저 이름을 입력해 주세요");
     }
 
-    function addToCart(menuId){
-      if(!document.getElementById("customerName").value.trim()){ focusNameInput(); return; }
+    function addToCart(menuId) {
+      if (!document.getElementById("customerName").value.trim()) { focusNameInput(); return; }
       const info = getOrderAvailability();
-      if(!info.canOrder){ alert(info.desc||"현재 주문할 수 없습니다."); return; }
-      const menu = menuMap[menuId];
-      if(!menu) return;
-      const stock = Number(menu.stock||0);
-      if(stock<=0){ alert("품절입니다."); return; }
+      if (!info.canOrder) { alert(info.desc || "현재 주문할 수 없습니다."); return; }
+      const menu  = menuMap[menuId];
+      if (!menu) return;
+      const stock = Number(menu.stock || 0);
+      if (stock <= 0) { alert("품절입니다."); return; }
       const cur = getCartQty(menuId);
-      if(cur>=stock){ alert("남은 재고보다 많이 담을 수 없습니다."); return; }
+      if (cur >= stock) { showToast("더 담을 수 없어요. 남은 수량만큼만 가능합니다."); return; }
       cart[menuId] = cur + 1;
+      showToast(`✅ ${menu.name} 담겼습니다`);
       renderMenus();
     }
 
-    function changeQty(menuId, delta){
-      const menu = menuMap[menuId];
-      if(!menu) return;
+    function changeQty(menuId, delta) {
+      const menu  = menuMap[menuId];
+      if (!menu) return;
       const cur   = getCartQty(menuId);
       const next  = cur + delta;
-      const stock = Number(menu.stock||0);
-      if(next < 0) return;
-      if(next > stock){ alert("남은 재고보다 많이 담을 수 없습니다."); return; }
-      if(next===0) delete cart[menuId];
+      const stock = Number(menu.stock || 0);
+      if (next < 0) return;
+      if (next > stock) { showToast("더 담을 수 없어요. 남은 수량보다 많습니다."); return; }
+      if (next === 0) delete cart[menuId];
       else cart[menuId] = next;
       renderMenus();
     }
 
-    function clearCart(){
-      cart = {};
-      renderMenus();
-    }
+    function clearCart() { cart = {}; renderMenus(); }
+    function scrollToCart() { document.getElementById("cartSection").scrollIntoView({ behavior: "smooth" }); }
 
-    function scrollToCart(){
-      document.getElementById("cartSection").scrollIntoView({behavior:"smooth"});
-    }
-
-    function getCartItems(){
+    function getCartItems() {
       return Object.entries(cart)
-        .filter(([_,qty])=>Number(qty)>0)
-        .map(([menuId,qty])=>{
+        .filter(([_, qty]) => Number(qty) > 0)
+        .map(([menuId, qty]) => {
           const menu = menuMap[menuId];
-          if(!menu) return null;
-          return { menuId, name:menu.name, price:Number(menu.price||0), qty:Number(qty), amount:Number(menu.price||0)*Number(qty) };
+          if (!menu) return null;
+          return { menuId, name: menu.name, price: Number(menu.price || 0), qty: Number(qty), amount: Number(menu.price || 0) * Number(qty) };
         }).filter(Boolean);
     }
 
-    function updateCartDisplay(){
-      const items    = getCartItems();
-      const itemsEl  = document.getElementById("cartItems");
-      const emptyEl  = document.getElementById("cartEmpty");
+    /* ── 장바구니 화면 ── */
+    function updateCartDisplay() {
+      const items      = getCartItems();
+      const itemsEl    = document.getElementById("cartItems");
+      const emptyEl    = document.getElementById("cartEmpty");
       const totalRowEl = document.getElementById("cartTotalRow");
       const cartBarEl  = document.getElementById("cartBar");
 
-      if(!items.length){
+      if (!items.length) {
         itemsEl.innerHTML = "";
-        emptyEl.style.display = "block";
+        emptyEl.style.display  = "block";
         totalRowEl.style.display = "none";
         cartBarEl.classList.remove("visible");
         updateSubmitButtonState();
         return;
       }
 
-      emptyEl.style.display = "none";
+      emptyEl.style.display    = "none";
       totalRowEl.style.display = "block";
       cartBarEl.classList.add("visible");
 
-      let total=0, totalQty=0;
-      itemsEl.innerHTML = items.map(item=>{
+      let total = 0, totalQty = 0;
+      itemsEl.innerHTML = items.map(item => {
         total    += item.amount;
         totalQty += item.qty;
         return `
           <div class="cart-item">
             <div class="cart-item-info">
               <div class="cart-item-name">${escapeHtml(item.name)}</div>
-              <div class="cart-item-sub">${currency(item.price)} × ${item.qty} = ${currency(item.amount)}</div>
+              <div class="cart-item-sub">${currency(item.price)} × ${item.qty}개 = ${currency(item.amount)}</div>
             </div>
             <div class="cart-qty-wrap">
               <button class="cqb minus" onclick="changeQty('${item.menuId}',-1)">−</button>
@@ -860,122 +1070,135 @@ function fallbackCopyText(text){
           </div>`;
       }).join("");
 
-      document.getElementById("totalAmount").innerText = currency(total);
-      document.getElementById("cartBarCount").innerText = `${totalQty}개 항목`;
+      document.getElementById("totalAmount").innerText  = currency(total);
+      document.getElementById("cartBarCount").innerText = `${totalQty}개 선택`;
       document.getElementById("cartBarTotal").innerText = currency(total);
       updateSubmitButtonState();
     }
 
-    function updateSubmitButtonState(){
+    /* ── 주문 버튼 상태 ── */
+    function updateSubmitButtonState() {
       const info     = getOrderAvailability();
       const hasName  = document.getElementById("customerName").value.trim();
-      const totalQty = getCartItems().reduce((s,i)=>s+i.qty, 0);
+      const totalQty = getCartItems().reduce((s, i) => s + i.qty, 0);
       const btn      = document.getElementById("submitBtn");
-      if(!btn) return;
+      if (!btn) return;
       const canSubmit = info.canOrder && !!hasName && totalQty > 0;
       btn.disabled = !canSubmit;
-      if(!info.canOrder)   btn.innerText = "현재 주문 불가";
-      else if(!hasName)    btn.innerText = "윗쪽에 이름을 입력해 주세요";
-      else if(totalQty<=0) btn.innerText = "메뉴를 선택해 주세요";
-      else                 btn.innerText = "주문하기";
+      if (!info.canOrder)   btn.innerText = "현재 주문을 받지 않습니다";
+      else if (!hasName)    btn.innerText = "1단계: 이름을 먼저 입력해 주세요";
+      else if (totalQty <= 0) btn.innerText = "2단계: 물건을 먼저 골라주세요";
+      else                  btn.innerText  = "✅ 주문하기";
     }
 
-    // ── 주문 상태 스텝 ──
-    const STATUS_STEPS = ["주문접수","입금확인","준비중","준비완료","수령완료"];
-    const STATUS_IDX   = Object.fromEntries(STATUS_STEPS.map((s,i)=>[s,i]));
+    /* ── 주문 현황 ── */
+    const STATUS_STEPS_LIST = ["주문접수","입금확인","준비중","준비완료","수령완료"];
+    const STATUS_STEPS_KR   = ["주문\n접수","입금\n확인","준비\n중","준비\n완료","수령\n완료"];
 
-    function renderStatusSteps(status){
-      if(status==="취소") return `<div style="margin:10px 0"><span class="sbadge sbadge-취소">취소됨</span></div>`;
-      const cur = STATUS_IDX[status] ?? 0;
-      return `<div class="status-steps">${STATUS_STEPS.map((s,i)=>{
-        const cls = i<cur ? "done" : i===cur ? "current" : "";
-        return `<div class="step ${cls}"><div class="step-dot">${i<cur?"✓":""}</div><div class="step-label">${s}</div></div>`;
-      }).join("")}</div>`;
+    function renderProgressSteps(status) {
+      if (status === "취소") return `<div style="text-align:center;padding:10px 0;font-size:18px;color:#c62828;font-weight:900;">❌ 주문이 취소되었습니다</div>`;
+      const cur = STATUS_STEPS_LIST.indexOf(status);
+      return `<div class="progress-steps">` +
+        STATUS_STEPS_LIST.map((s, i) => {
+          const cls = i < cur ? "done" : i === cur ? "current" : "";
+          const dot = i < cur ? "✓" : String(i + 1);
+          const lbl = STATUS_STEPS_KR[i].replace("\n", "<br>");
+          return `<div class="ps-item ${cls}"><div class="ps-dot">${dot}</div><div class="ps-label">${lbl}</div></div>`;
+        }).join("") +
+        `</div>`;
     }
 
-    function renderMyOrder(){
+    const STATUS_LABEL = {
+      "주문접수": "주문이 접수되었습니다",
+      "입금확인": "입금을 확인했습니다",
+      "준비중":   "물건을 준비하고 있습니다",
+      "준비완료": "물건 준비가 완료되었습니다!",
+      "수령완료": "수령이 완료되었습니다",
+      "취소":    "주문이 취소되었습니다"
+    };
+
+    function renderMyOrder() {
       const wrap = document.getElementById("myOrderBox");
-      if(!myOrderId){
-        wrap.innerHTML=`<div class="empty-box">아직 이 기기에서 주문한 내역이 없습니다.</div>`;
+      if (!myOrderId) {
+        wrap.innerHTML = `<div class="empty-box">이 기기에서 주문한 내역이 없습니다.</div>`;
         return;
       }
-      const myOrder = orders.find(o=>o.id===myOrderId);
-      if(!myOrder){
-        wrap.innerHTML=`
-          <div class="empty-box">주문을 찾을 수 없습니다. 다른 기기에서 주문했거나 초기화되었을 수 있습니다.</div>
-          <div style="margin-top:10px">
-            <button class="action-btn action-gray" onclick="clearMyOrder()">내 주문 기록 지우기</button>
+      const myOrder = orders.find(o => o.id === myOrderId);
+      if (!myOrder) {
+        wrap.innerHTML = `
+          <div class="empty-box">주문을 찾을 수 없습니다. 다른 기기에서 주문하셨거나 초기화된 것일 수 있습니다.</div>
+          <div style="margin-top:12px">
+            <button class="act-btn act-gray" onclick="clearMyOrder()">내 주문 기록 지우기</button>
           </div>`;
         return;
       }
 
       const activeStatuses = ["주문접수","입금확인","준비중","준비완료"];
-      const ahead = orders.filter(o=>
+      const ahead = orders.filter(o =>
         activeStatuses.includes(o.status) &&
         Number(o.queueNumber) < Number(myOrder.queueNumber)
       ).length;
 
-      const isReady = myOrder.status === "준비완료";
-      const itemsHtml = (myOrder.items||[]).map(item=>`<div>• ${escapeHtml(item.name)} ${item.qty}개</div>`).join("");
+      const isReady    = myOrder.status === "준비완료";
+      const itemsHtml  = (myOrder.items || []).map(item => `<div>• ${escapeHtml(item.name)} ${item.qty}개</div>`).join("");
+      const stCls      = `st-${myOrder.status}`;
+      const stLabel    = STATUS_LABEL[myOrder.status] || myOrder.status;
 
       wrap.innerHTML = `
-        <div class="order-card ${isReady?"ready":"active"}">
-          <div class="order-header">
-            <div>
-              <div class="order-number">${escapeHtml(myOrder.orderNumber||"-")}</div>
-              <div class="order-time">${escapeHtml(myOrder.createdAtText||formatDateTime(myOrder.createdAt))}</div>
-            </div>
-            <span class="sbadge sbadge-${escapeHtml(myOrder.status)}">${escapeHtml(myOrder.status)}</span>
-          </div>
-          ${renderStatusSteps(myOrder.status)}
-          ${!["수령완료","취소"].includes(myOrder.status)?`<div class="ahead-badge">⏳ 내 앞 대기 <strong>${ahead}팀</strong></div>`:""}
-          <div class="order-items-list">${itemsHtml}</div>
-          <div class="order-total-amt"><span>합계</span><span>${currency(myOrder.totalAmount)}</span></div>
-          <div class="order-actions">
-            <button class="action-btn action-blue" onclick="copyText('${escapeHtml(myOrder.orderNumber||"")}')">주문번호 복사</button>
-            <button class="action-btn action-gray" onclick="clearMyOrder()">기록 지우기</button>
+        <div>
+          <div class="order-num-big">${escapeHtml(myOrder.orderNumber || "-")}</div>
+          <div class="order-time-sm">${escapeHtml(myOrder.createdAtText || formatDateTime(myOrder.createdAt))}</div>
+          <div class="status-box ${stCls}">${stLabel}</div>
+          ${renderProgressSteps(myOrder.status)}
+          ${!["수령완료","취소"].includes(myOrder.status)
+            ? `<div class="ahead-box">⏳ 내 앞에 대기 중인 주문: <strong>${ahead}건</strong></div>` : ""}
+          <div class="order-items">${itemsHtml}</div>
+          <div class="order-total-row"><span>합계</span><span>${currency(myOrder.totalAmount)}</span></div>
+          <div class="act-btns">
+            <button class="act-btn act-blue" onclick="copyText('${escapeHtml(myOrder.orderNumber||"")}')">주문번호 복사</button>
+            <button class="act-btn act-gray" onclick="clearMyOrder()">기록 지우기</button>
           </div>
         </div>`;
     }
 
-    function clearMyOrder(){
+    function clearMyOrder() {
       localStorage.removeItem(LAST_ORDER_KEY);
       myOrderId = "";
       stopReadyAlert();
       renderMyOrder();
     }
 
-    async function getNextQueueNumber(){
-      const ref = db.ref(COUNTER_PATH);
+    /* ── Firebase 트랜잭션 ── */
+    async function getNextQueueNumber() {
+      const ref    = db.ref(COUNTER_PATH);
       const result = await ref.transaction(current => Number(current || 0) + 1);
-      if(!result.committed) throw new Error("번호 생성 실패");
+      if (!result.committed) throw new Error("번호 발급 실패");
       return Number(result.snapshot.val());
     }
 
-    // ── 재고 예약 ──
-    async function reserveStock(items){
+    async function reserveStock(items) {
       const reserved = [];
       try {
-        for(const item of items){
-          const ref = db.ref(`${MENU_PATH}/${item.menuId}`);
+        for (const item of items) {
+          const ref      = db.ref(`${MENU_PATH}/${item.menuId}`);
           const txResult = await ref.transaction(current => {
-            if(current==null) return current;
-            const currentStock = Number(current.stock||0);
-            if(current.active===false) return;
-            if(currentStock < item.qty) return;
-            current.stock = currentStock - Number(item.qty||0);
+            if (current == null) return current;
+            const currentStock = Number(current.stock || 0);
+            if (current.active === false) return;
+            if (currentStock < item.qty) return;
+            current.stock = currentStock - Number(item.qty || 0);
             return current;
           });
-          if(!txResult.committed) throw new Error(`${item.name} 재고가 부족하거나 주문할 수 없습니다.`);
+          if (!txResult.committed) throw new Error(`${item.name} 재고가 부족하거나 주문할 수 없습니다.`);
           reserved.push(item);
         }
         return true;
-      } catch(error){
-        for(const item of reserved){
+      } catch (error) {
+        for (const item of reserved) {
           const rollbackRef = db.ref(`${MENU_PATH}/${item.menuId}`);
           await rollbackRef.transaction(current => {
-            if(current==null) return current;
-            current.stock = Number(current.stock||0) + Number(item.qty||0);
+            if (current == null) return current;
+            current.stock = Number(current.stock || 0) + Number(item.qty || 0);
             return current;
           });
         }
@@ -983,41 +1206,41 @@ function fallbackCopyText(text){
       }
     }
 
-    // ── 주문 제출 ──
-    async function submitOrder(){
+    /* ── 주문 제출 ── */
+    async function submitOrder() {
       const availability = getOrderAvailability();
-      if(!availability.canOrder){ alert(availability.desc||"현재 주문할 수 없습니다."); return; }
+      if (!availability.canOrder) { alert(availability.desc || "현재 주문할 수 없습니다."); return; }
 
       const customerName = document.getElementById("customerName").value.trim();
-      if(!customerName){
-        alert("주문자 / 입금자 이름을 입력해 주세요.");
+      if (!customerName) {
+        alert("이름을 입력해 주세요.");
         document.getElementById("customerName").focus();
         return;
       }
 
       const items = getCartItems();
-      if(!items.length){ alert("메뉴를 1개 이상 선택해 주세요."); return; }
+      if (!items.length) { alert("물건을 1개 이상 담아주세요."); return; }
 
-      const totalAmount = items.reduce((s,i)=>s+i.amount, 0);
+      const totalAmount = items.reduce((s, i) => s + i.amount, 0);
       const submitBtn   = document.getElementById("submitBtn");
       const notice      = document.getElementById("orderNotice");
 
-      submitBtn.disabled = true;
+      submitBtn.disabled  = true;
       submitBtn.innerText = "주문 처리 중...";
-      notice.innerHTML = "";
+      notice.innerHTML    = "";
 
       try {
         await reserveStock(items);
 
-        const queueNumber = await getNextQueueNumber();
-        const orderNumber = `${boothPrefix}-${String(queueNumber).padStart(3,"0")}`;
-        const createdAt   = Date.now();
+        const queueNumber   = await getNextQueueNumber();
+        const orderNumber   = `${boothPrefix}-${String(queueNumber).padStart(3, "0")}`;
+        const createdAt     = Date.now();
         const createdAtText = formatDateTime(createdAt);
 
         const newOrderRef = db.ref(ORDERS_PATH).push();
         await newOrderRef.set({
           boothId, orderNumber, queueNumber, customerName,
-          items, totalAmount, status:"주문접수", createdAt, createdAtText
+          items, totalAmount, status: "주문접수", createdAt, createdAtText
         });
 
         myOrderId = newOrderRef.key;
@@ -1028,74 +1251,68 @@ function fallbackCopyText(text){
         renderMyOrder();
 
         notice.innerHTML = `
-          <div class="notice-box">
+          <div class="notice-ok">
             ✅ 주문이 완료되었습니다!<br/>
             <strong>주문번호: ${escapeHtml(orderNumber)}</strong><br/>
-            입금 후 이 화면에서 상태를 확인해 주세요.
+            결제 후 아래에서 상태를 확인해 주세요.
           </div>`;
 
-        window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"});
-      } catch(error){
-        notice.innerHTML = `<div class="warn-box">주문 중 문제가 발생했습니다.<br/>${escapeHtml(error.message||"잠시 후 다시 시도해 주세요.")}</div>`;
-        alert(error.message || "주문 중 문제가 발생했습니다.");
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      } catch (error) {
+        notice.innerHTML = `<div class="notice-err">⚠️ 주문 중 오류가 발생했습니다.<br/>${escapeHtml(error.message || "잠시 후 다시 시도해 주세요.")}</div>`;
       } finally {
         updateSubmitButtonState();
       }
     }
 
-    // ── Firebase 리스너 ──
-    function listenBoothInfo(){
+    /* ── Firebase 리스너 ── */
+    function listenBoothInfo() {
       db.ref(BOOTH_INFO_PATH).on("value", snap => {
-        const info = snap.val()||{};
-        if(info.displayName){
-          document.getElementById("headerBoothName").textContent = "🛍️ "+info.displayName;
-          document.title = info.displayName+" - 주문하기";
+        const info = snap.val() || {};
+        if (info.displayName) {
+          document.getElementById("headerBoothName").textContent = "🛒 " + info.displayName;
+          document.title = info.displayName + " - 주문하기";
         }
       });
     }
-
-    function listenMenus(){
+    function listenMenus() {
       db.ref(MENU_PATH).on("value", snap => {
-        menuMap = snap.val()||{};
+        menuMap = snap.val() || {};
         Object.keys(cart).forEach(menuId => {
           const menu = menuMap[menuId];
-          if(!menu||menu.active===false||Number(menu.stock||0)<=0){ delete cart[menuId]; return; }
-          if(Number(cart[menuId]||0) > Number(menu.stock||0)){
-            cart[menuId] = Number(menu.stock||0);
-            if(cart[menuId]<=0) delete cart[menuId];
+          if (!menu || menu.active === false || Number(menu.stock || 0) <= 0) { delete cart[menuId]; return; }
+          if (Number(cart[menuId] || 0) > Number(menu.stock || 0)) {
+            cart[menuId] = Number(menu.stock || 0);
+            if (cart[menuId] <= 0) delete cart[menuId];
           }
         });
         renderMenus();
       });
     }
-
-    function listenPayment(){
+    function listenPayment() {
       db.ref(PAYMENT_PATH).on("value", snap => {
-        paymentInfo = snap.val()||{};
+        paymentInfo = snap.val() || {};
         renderPaymentInfo();
       });
     }
-
-    function listenControl(){
+    function listenControl() {
       db.ref(CONTROL_PATH).on("value", snap => {
-        boothControl = snap.val()||{};
+        boothControl = snap.val() || {};
         renderHeaderStatus();
       });
     }
-
-    function listenOrders(){
+    function listenOrders() {
       db.ref(ORDERS_PATH).on("value", snap => {
-        const raw = snap.val()||{};
-        orders = Object.keys(raw).map(id=>({id,...raw[id]}));
+        const raw = snap.val() || {};
+        orders = Object.keys(raw).map(id => ({ id, ...raw[id] }));
         renderMyOrder();
-
-        const myOrder = myOrderId ? orders.find(o=>o.id===myOrderId) : null;
-        if(myOrder && myOrder.status === "준비완료") maybeShowReadyAlert(myOrder.recallAt);
+        const myOrder = myOrderId ? orders.find(o => o.id === myOrderId) : null;
+        if (myOrder && myOrder.status === "준비완료") maybeShowReadyAlert();
         else stopReadyAlert();
       });
     }
 
-    // ── 초기화 ──
+    /* ── 초기화 ── */
     loadCustomerName();
     updateCartDisplay();
     renderHeaderStatus();
