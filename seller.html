@@ -166,6 +166,12 @@
     .status-입금확인 { background: #1e90ff; }
     .status-준비중 { background: #ffa502; }
     .status-준비완료 { background: #2ed573; }
+    .status-미수령 { background: #ff4757; }
+
+    .order-card.overdue-order {
+      border: 2px solid var(--danger);
+      background: #fff5f5;
+    }
 
     .menu-item {
       display: flex;
@@ -472,14 +478,35 @@
         }
       }
 
+      // 준비완료(고객호출) 시 readyAt 기록 → 5분 타이머 기준
+      if (status === "준비완료") {
+        updateData.readyAt = firebase.database.ServerValue.TIMESTAMP;
+      }
+
       await db.ref(`${ORDERS_PATH}/${id}`).update(updateData);
       newOrderHighlightIds.delete(id);
     }
 
-    // 재호출: recallAt 갱신 → 구매자 알림 재발동
+    // 재호출: recallAt + readyAt 갱신 → 5분 타이머 리셋, 준비완료로 복구
     async function recallOrder(id) {
-      await db.ref(`${ORDERS_PATH}/${id}`).update({ recallAt: firebase.database.ServerValue.TIMESTAMP });
+      await db.ref(`${ORDERS_PATH}/${id}`).update({
+        status: "준비완료",
+        recallAt: firebase.database.ServerValue.TIMESTAMP,
+        readyAt: firebase.database.ServerValue.TIMESTAMP
+      });
     }
+
+    // 5분 경과 시 준비완료 → 미수령 자동 전환
+    function checkOverdueOrders() {
+      const now = Date.now();
+      const FIVE_MIN = 5 * 60 * 1000;
+      orders.forEach(o => {
+        if (o.status === "준비완료" && o.readyAt && (now - o.readyAt) >= FIVE_MIN) {
+          db.ref(`${ORDERS_PATH}/${o.id}`).update({ status: "미수령" });
+        }
+      });
+    }
+    setInterval(checkOverdueOrders, 30 * 1000);
 
     // 기존 함수는 남겨두되 현재 UI에서는 사용 안 함
     function cancelOrder(id) {
@@ -553,23 +580,21 @@
         .filter(o => o.status === "수령완료")
         .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
+      // 수령완료 기록은 완료 필터에서만 표시
       if(currentSummaryFilter === "waiting"){
         activeOrders = activeOrders.filter(o => ["주문접수","입금확인","준비중"].includes(o.status));
         doneOrders = [];
       } else if(currentSummaryFilter === "ready"){
-        activeOrders = activeOrders.filter(o => o.status === "준비완료");
+        activeOrders = activeOrders.filter(o => ["준비완료","미수령"].includes(o.status));
         doneOrders = [];
       } else if(currentSummaryFilter === "done"){
         activeOrders = [];
-        doneOrders = doneOrders.filter(o => o.status === "수령완료");
+        // doneOrders 그대로 표시
       } else if(currentSummaryFilter === "sales"){
-        activeOrders = orders
-          .filter(o => !["수령완료","취소"].includes(o.status))
-          .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-        doneOrders = orders
-          .filter(o => o.status === "수령완료")
-          .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+        // 전체 보기 (수령완료 포함)
+      } else {
+        // 기본(all) 뷰: 활성 주문만, 수령완료 기록 숨김
+        doneOrders = [];
       }
 
       if(!activeOrders.length && !doneOrders.length) {
@@ -577,11 +602,14 @@
         return;
       }
 
-      const activeHtml = activeOrders.map(o => `
-        <div class="order-card ${newOrderHighlightIds.has(o.id) ? 'new-order' : ''}">
+      const activeHtml = activeOrders.map(o => {
+        const isOverdue = o.status === "미수령";
+        const showRecall = o.status === "준비완료" || o.status === "미수령";
+        return `
+        <div class="order-card ${newOrderHighlightIds.has(o.id) ? 'new-order' : ''} ${isOverdue ? 'overdue-order' : ''}">
           <div style="display:flex; justify-content:space-between; gap:8px;">
             <strong><span style="font-size:1.2rem; color:var(--blue)">${o.orderNumber || '-'}</span> ${o.customerName || '익명'}</strong>
-            <span class="status-badge status-${o.status}">${getStatusLabel(o.status)}</span>
+            <span class="status-badge status-${o.status}">${o.status}</span>
           </div>
           <div class="small" style="margin:8px 0; padding:8px; background:#f9f9f9; border-radius:8px;">
             ${((o.items || []).map(i => `• ${i.name} ${i.qty}개`).join('<br>')) || '주문내역 없음'}
@@ -590,11 +618,12 @@
             <button class="btn btn-blue" onclick="setOrderStatus('${o.id}','입금확인')">입금</button>
             <button class="btn btn-accent" onclick="setOrderStatus('${o.id}','준비중')">준비중</button>
             <button class="btn btn-primary" onclick="setOrderStatus('${o.id}','준비완료')">고객호출</button>
-            ${o.status === '준비완료' ? `<button class="btn btn-accent" onclick="recallOrder('${o.id}')">재호출</button>` : ''}
+            ${showRecall ? `<button class="btn btn-accent" onclick="recallOrder('${o.id}')">재호출</button>` : ''}
             <button class="btn btn-gray" onclick="setOrderStatus('${o.id}','수령완료')">수령완료</button>
           </div>
         </div>
-      `).join('');
+        `;
+      }).join('');
 
       const doneHtml = doneOrders.length ? `
         <div class="done-section-title">수령완료 기록</div>
@@ -655,7 +684,7 @@
 
     function updateSummary() {
       const waiting = orders.filter(o => ["주문접수","입금확인","준비중"].includes(o.status)).length;
-      const ready = orders.filter(o => o.status === "준비완료").length;
+      const ready = orders.filter(o => ["준비완료","미수령"].includes(o.status)).length;
       const done = orders.filter(o => o.status === "수령완료").length;
       const sales = orders
         .filter(o => o.status !== "취소")
