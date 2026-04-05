@@ -78,7 +78,6 @@
     .step2-guide { font-size: 16px; color: #0d3b6e; margin-bottom: 14px; }
 
     .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
-    @media (max-width: 360px) { .menu-grid { grid-template-columns: 1fr; } }
     @media (min-width: 520px) { .menu-grid { grid-template-columns: 1fr 1fr 1fr; } }
 
     .menu-card {
@@ -467,7 +466,7 @@
         <div class="cart-bar-count" id="cartBarCount">0개 선택</div>
         <div class="cart-bar-total" id="cartBarTotal">0원</div>
       </div>
-      <button class="cart-bar-btn" onclick="scrollToCart()">주문하기 ↓</button>
+      <button class="cart-bar-btn" onclick="scrollToCart()">↓ 장바구니 보기</button>
     </div>
   </div>
 
@@ -515,7 +514,7 @@
     <div class="step-block step3" id="cartSection">
       <div class="step-head">
         <div class="step-badge" id="badge3">3</div>
-        <div class="step-title" id="stepTitle3">담은 물건을 확인하고 주문하세요</div>
+        <div class="step-title">🛒 장바구니</div>
       </div>
       <div class="step-body">
         <div id="cartItems"></div>
@@ -753,7 +752,6 @@
       const b3 = document.getElementById("badge3");
       const t1 = document.getElementById("stepTitle1");
       const t2 = document.getElementById("stepTitle2");
-      const t3 = document.getElementById("stepTitle3");
       const orderHead = document.querySelector(".my-order-head");
 
       if (b1) { b1.textContent = hasName ? "✓" : "1"; b1.classList.toggle("done", hasName); }
@@ -762,7 +760,6 @@
 
       if (t1) t1.textContent = hasName ? `이름: ${document.getElementById("customerName").value.trim()}` : "이름을 써주세요";
       if (t2) t2.textContent = hasCart ? `${getCartItems().reduce((s,i)=>s+i.qty,0)}가지 담겼습니다` : "원하는 물건을 골라주세요";
-      if (t3) t3.textContent = hasOrder ? "주문 완료 — 아래에서 현황 확인" : "담은 물건을 확인하고 주문하세요";
 
       // 주문 현황 헤더 강조 (입금 전)
       if (orderHead) {
@@ -1197,9 +1194,14 @@
         cart = {};
         renderMenus();
         renderMyOrder();
+        updateStepBadges();
+        updateStepBlockStyles();
 
-        // 입금 안내 팝업 표시
-        showPayPopup(orderNumber, totalAmount);
+        // 팝업 없이 바로 주문 현황으로 스크롤
+        setTimeout(() => {
+          document.getElementById("myOrderBlock")
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
 
       } catch (error) {
         notice.innerHTML = `<div class="notice-err">⚠️ 주문 중 오류가 발생했습니다.<br/>${escapeHtml(error.message || "잠시 후 다시 시도해 주세요.")}</div>`;
@@ -1310,13 +1312,16 @@
     listenOrders();
     if (DEV_MODE) setInterval(renderDevPanel, 2000);
 
-    // 기존 주문이 있으면 주문 현황으로 자동 스크롤
-    if (myOrderId) {
-      setTimeout(() => {
+    // 기존 주문 있으면 주문 현황으로, 없으면 이름 입력창으로 자동 스크롤
+    setTimeout(() => {
+      if (myOrderId) {
         document.getElementById("myOrderBlock")
           .scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 900);
-    }
+      } else {
+        document.getElementById("customerName")
+          .scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 600);
   </script>
 </body>
 </html>
