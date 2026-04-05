@@ -668,7 +668,7 @@
     </div>
 
     <!-- 4단계: 결제 정보 -->
-    <div class="step-block step4">
+    <div class="step-block step4" id="paymentSection">
       <div class="step-head">
         <div class="step-badge">4</div>
         <div class="step-title">이 계좌로 결제해 주세요</div>
@@ -1254,10 +1254,11 @@
           <div class="notice-ok">
             ✅ 주문이 완료되었습니다!<br/>
             <strong>주문번호: ${escapeHtml(orderNumber)}</strong><br/>
-            결제 후 아래에서 상태를 확인해 주세요.
+            아래 계좌번호를 복사해서 입금해 주세요.<br/>
+            입금 후 맨 아래 <strong>내 주문 현황</strong>에서 상태를 확인하세요.
           </div>`;
 
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        document.getElementById("paymentSection").scrollIntoView({ behavior: "smooth", block: "start" });
       } catch (error) {
         notice.innerHTML = `<div class="notice-err">⚠️ 주문 중 오류가 발생했습니다.<br/>${escapeHtml(error.message || "잠시 후 다시 시도해 주세요.")}</div>`;
       } finally {
