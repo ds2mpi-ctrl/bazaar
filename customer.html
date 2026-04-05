@@ -194,10 +194,15 @@
     /* 입금 안내 박스 — 주문접수 상태일 때 강조 */
     .payment-needed-box {
       background: #fff8e1;
-      border: 2px solid #f9a825;
+      border: 3px solid #f9a825;
       border-radius: 12px;
       padding: 16px 18px;
       margin-bottom: 14px;
+      animation: payPulse 2s ease-in-out infinite;
+    }
+    @keyframes payPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(249,168,37,0.0); }
+      50%      { box-shadow: 0 0 0 8px rgba(249,168,37,0.25); }
     }
     .payment-needed-title { font-size: 19px; font-weight: 900; color: #3e2000; margin-bottom: 8px; }
     .payment-needed-acct  { font-size: 24px; font-weight: 900; color: #1a1a1a; margin-bottom: 4px; letter-spacing: 0.5px; }
@@ -296,9 +301,11 @@
     .pay-popup-overlay {
       position: fixed; inset: 0; z-index: 8000;
       background: rgba(0,0,0,0.72);
-      display: none; align-items: center; justify-content: center; padding: 20px;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      visibility: hidden; opacity: 0;
+      transition: opacity 0.25s, visibility 0.25s;
     }
-    .pay-popup-overlay.show { display: flex; }
+    .pay-popup-overlay.show { visibility: visible; opacity: 1; }
     .pay-popup {
       width: min(94vw, 520px);
       background: #fff; border-radius: 20px;
@@ -346,6 +353,21 @@
       font-size: 17px; font-weight: 700; margin-top: 10px;
     }
     .pay-popup-copied.show { display: block; }
+    .pay-popup-countdown {
+      text-align: center; font-size: 14px; font-weight: 700;
+      color: #1565c0; margin-top: 8px; min-height: 20px;
+      opacity: 0.85;
+    }
+    /* ── 단계 완료 체크 뱃지 ── */
+    .step-badge.done { background: rgba(255,255,255,0.95); }
+    /* ── 개발자 모드 패널 ── */
+    .dev-panel {
+      background: #1a1a2e; color: #a0e0ff; font-family: monospace;
+      font-size: 12px; padding: 14px 16px; margin: 12px 0;
+      border-radius: 10px; line-height: 1.8;
+    }
+    .dev-panel summary { cursor: pointer; font-weight: 900; color: #ffd700; font-size: 13px; }
+    .dev-panel pre { margin: 8px 0 0; white-space: pre-wrap; word-break: break-all; }
 
     .pay-popup-confirm-btn {
       width: 100%; padding: 18px; border: none; border-radius: 12px;
@@ -375,6 +397,21 @@
       0%,100% { background: rgba(176,58,46,0.93); }
       50%      { background: rgba(255,243,176,0.97); }
     }
+
+    /* ── 주문 처리 스피너 ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .order-btn.processing { background: #888; cursor: not-allowed; }
+    .order-btn.processing::before {
+      content: ""; display: inline-block; width: 18px; height: 18px;
+      border: 3px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      margin-right: 10px; vertical-align: middle;
+    }
+    /* ── 완료 단계 헤드 투명도 ── */
+    .step-block.step-done { opacity: 0.72; }
+    .step-block.step-done .step-head { filter: saturate(0.6); }
+    /* ── 토스트 크기 강화 ── */
+    .toast { font-size: 17px; padding: 15px 26px; }
 
     /* 반응형 */
     @media (max-width: 360px) {
@@ -409,6 +446,7 @@
         </div>
         <button class="pay-popup-copy-btn" id="popupCopyBtn" onclick="popupCopy()">📋 계좌번호 복사하기</button>
         <div class="pay-popup-copied" id="popupCopied">✅ 복사되었습니다! 이제 입금해 주세요</div>
+        <div class="pay-popup-countdown" id="popupCountdown"></div>
       </div>
       <button class="pay-popup-confirm-btn" onclick="closePayPopup()">✓ 입금할게요 — 주문 현황 보기</button>
     </div>
@@ -447,8 +485,8 @@
     <!-- 1단계: 이름 -->
     <div class="step-block step1">
       <div class="step-head">
-        <div class="step-badge">1</div>
-        <div class="step-title">이름을 써주세요</div>
+        <div class="step-badge" id="badge1">1</div>
+        <div class="step-title" id="stepTitle1">이름을 써주세요</div>
       </div>
       <div class="step-body">
         <div class="name-guide">
@@ -464,8 +502,8 @@
     <!-- 2단계: 메뉴 선택 -->
     <div class="step-block step2">
       <div class="step-head">
-        <div class="step-badge">2</div>
-        <div class="step-title">원하는 물건을 골라주세요</div>
+        <div class="step-badge" id="badge2">2</div>
+        <div class="step-title" id="stepTitle2">원하는 물건을 골라주세요</div>
       </div>
       <div class="step-body">
         <div class="step2-guide">물건을 누르면 장바구니에 담깁니다.</div>
@@ -476,8 +514,8 @@
     <!-- 3단계: 장바구니 & 주문 -->
     <div class="step-block step3" id="cartSection">
       <div class="step-head">
-        <div class="step-badge">3</div>
-        <div class="step-title">담은 물건을 확인하고 주문하세요</div>
+        <div class="step-badge" id="badge3">3</div>
+        <div class="step-title" id="stepTitle3">담은 물건을 확인하고 주문하세요</div>
       </div>
       <div class="step-body">
         <div id="cartItems"></div>
@@ -509,6 +547,14 @@
 
   </div><!-- /wrap -->
 
+  <!-- 개발자 모드 패널 (?dev=1) -->
+  <div class="wrap" id="devPanelWrap" style="display:none;">
+    <details class="dev-panel" id="devPanel">
+      <summary>🛠 개발자 패널 (DEV MODE)</summary>
+      <pre id="devInfo"></pre>
+    </details>
+  </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBowzlxR0AZZIe4e0pzoZHmbRLwy_X1_S8",
@@ -526,6 +572,7 @@
     const params      = new URLSearchParams(location.search);
     const boothId     = params.get("booth")  || "main";
     const boothPrefix = params.get("prefix") || (boothId !== "main" ? boothId.toUpperCase() : "A");
+    const DEV_MODE    = params.get("dev") === "1";
 
     const MENU_PATH       = `settings/menu/${boothId}`;
     const PAYMENT_PATH    = `settings/payment/${boothId}`;
@@ -639,20 +686,42 @@
       document.getElementById("popupOwner").textContent    = ao ? `통장 이름: ${ao}` : "";
       document.getElementById("popupAmount").textContent   = currency(totalAmount);
       document.getElementById("popupCopied").classList.remove("show");
+      const cdEl = document.getElementById("popupCountdown");
+      if (cdEl) cdEl.textContent = "";
+      clearInterval(_autoCloseInterval);
       document.getElementById("payPopup").classList.add("show");
     }
+
+    let _autoCloseInterval = null;
 
     function popupCopy() {
       if (!popupAcctText) return;
       const doCopy = () => {
         document.getElementById("popupCopied").classList.add("show");
-        document.getElementById("popupCopyBtn").textContent = "✅ 복사됨";
+        document.getElementById("popupCopyBtn").textContent = "✅ 복사됨!";
+        _startAutoClose();
       };
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(popupAcctText).then(doCopy).catch(() => fallbackCopy(popupAcctText, doCopy));
       } else {
         fallbackCopy(popupAcctText, doCopy);
       }
+    }
+
+    function _startAutoClose() {
+      clearInterval(_autoCloseInterval);
+      let count = 3;
+      const el = document.getElementById("popupCountdown");
+      if (el) el.textContent = `${count}초 후 주문 현황으로 자동 이동...`;
+      _autoCloseInterval = setInterval(() => {
+        count--;
+        if (count <= 0) {
+          clearInterval(_autoCloseInterval);
+          closePayPopup();
+        } else {
+          if (el) el.textContent = `${count}초 후 주문 현황으로 자동 이동...`;
+        }
+      }, 1000);
     }
 
     function fallbackCopy(text, callback) {
@@ -662,16 +731,51 @@
       ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
       document.body.appendChild(ta);
       ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
-      try { if (document.execCommand("copy") && callback) callback(); } catch {}
+      try { if (document.execCommand("copy") && callback) callback(); } catch { if (callback) callback(); }
       document.body.removeChild(ta);
     }
 
     function closePayPopup() {
+      clearInterval(_autoCloseInterval);
+      const cdEl = document.getElementById("popupCountdown");
+      if (cdEl) cdEl.textContent = "";
       document.getElementById("payPopup").classList.remove("show");
       document.getElementById("popupCopyBtn").textContent = "📋 계좌번호 복사하기";
+      document.getElementById("popupCopied").classList.remove("show");
       setTimeout(() => {
         document.getElementById("myOrderBlock").scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 200);
+      }, 280);
+    }
+
+    /* ── 단계 뱃지 업데이트 ── */
+    function updateStepBadges() {
+      const hasName  = !!document.getElementById("customerName").value.trim();
+      const hasCart  = getCartItems().length > 0;
+      const hasOrder = !!myOrderId;
+      const myOrder  = hasOrder ? orders.find(o => o.id === myOrderId) : null;
+
+      const b1 = document.getElementById("badge1");
+      const b2 = document.getElementById("badge2");
+      const b3 = document.getElementById("badge3");
+      const t1 = document.getElementById("stepTitle1");
+      const t2 = document.getElementById("stepTitle2");
+      const t3 = document.getElementById("stepTitle3");
+      const orderHead = document.querySelector(".my-order-head");
+
+      if (b1) { b1.textContent = hasName ? "✓" : "1"; b1.classList.toggle("done", hasName); }
+      if (b2) { b2.textContent = hasCart ? "✓" : "2"; b2.classList.toggle("done", hasCart); }
+      if (b3) { b3.textContent = hasOrder ? "✓" : "3"; b3.classList.toggle("done", hasOrder); }
+
+      if (t1) t1.textContent = hasName ? `이름: ${document.getElementById("customerName").value.trim()}` : "이름을 써주세요";
+      if (t2) t2.textContent = hasCart ? `${getCartItems().reduce((s,i)=>s+i.qty,0)}가지 담겼습니다` : "원하는 물건을 골라주세요";
+      if (t3) t3.textContent = hasOrder ? "주문 완료 — 아래에서 현황 확인" : "담은 물건을 확인하고 주문하세요";
+
+      // 주문 현황 헤더 강조 (입금 전)
+      if (orderHead) {
+        const needsPay = myOrder && myOrder.status === "주문접수";
+        orderHead.style.background = needsPay ? "#b03a2e" : "#37474f";
+        orderHead.textContent = needsPay ? "💳 📦 내 주문 현황 — 입금 필요!" : "📦 내 주문 현황";
+      }
     }
 
     /* ── 이름 ── */
@@ -690,6 +794,7 @@
       input.classList.toggle("filled", filled);
       const msg = document.getElementById("nameOkMsg");
       if (msg) msg.classList.toggle("show", filled);
+      updateStepBadges();
     }
     document.getElementById("customerName").addEventListener("input", saveCustomerName);
 
@@ -845,7 +950,7 @@
       if (!items.length) {
         itemsEl.innerHTML = ""; emptyEl.style.display = "block";
         totalRowEl.style.display = "none"; cartBarEl.classList.remove("visible");
-        updateSubmitButtonState(); return;
+        updateSubmitButtonState(); updateStepBadges(); return;
       }
 
       emptyEl.style.display = "none"; totalRowEl.style.display = "block";
@@ -872,6 +977,7 @@
       document.getElementById("cartBarCount").innerText = `${totalQty}개 선택`;
       document.getElementById("cartBarTotal").innerText = currency(total);
       updateSubmitButtonState();
+      updateStepBadges();
     }
 
     /* ── 주문 버튼 상태 ── */
@@ -952,12 +1058,20 @@
           <button class="copy-acct-btn" onclick="copyAccountInOrder('${escapeHtml(acctFull)}')">📋 계좌번호 복사하기</button>
         </div>` : "";
 
+      const actionBannerHtml = myOrder.status === "주문접수" ? `
+        <div style="background:#b03a2e;color:#fff;padding:13px 16px;border-radius:11px;
+             text-align:center;font-size:18px;font-weight:900;margin-bottom:14px;
+             animation:payPulse 2s ease-in-out infinite;">
+          👇 아래 계좌번호를 복사해서 입금해 주세요!
+        </div>` : "";
+
       wrap.innerHTML = `
         <div>
           <div class="order-num-big">${escapeHtml(myOrder.orderNumber || "-")}</div>
           <div class="order-time-sm">${escapeHtml(myOrder.createdAtText || formatDateTime(myOrder.createdAt))}</div>
           <div class="status-box ${stCls}">${stLabel}</div>
           ${renderProgressSteps(myOrder.status)}
+          ${actionBannerHtml}
           ${paymentNeedHtml}
           ${!["수령완료","취소"].includes(myOrder.status)
             ? `<div class="ahead-box">⏳ 내 앞에 대기 중인 주문: <strong>${ahead}건</strong></div>` : ""}
@@ -970,7 +1084,25 @@
     }
 
     function copyAccountInOrder(text) {
-      const doIt = () => showToast("✅ 계좌번호가 복사되었습니다");
+      const doIt = () => {
+        showToast("✅ 복사됨! 이제 해당 금액을 입금해 주세요");
+        // 버튼 상태 즉시 변경
+        const btn = document.querySelector(".copy-acct-btn");
+        if (btn) {
+          btn.textContent = "✅ 복사됨! — 이제 입금해 주세요";
+          btn.style.background = "#2e7d32";
+          btn.style.color = "#fff";
+        }
+        // 입금 안내 메시지 추가
+        const box = document.querySelector(".payment-needed-box");
+        if (box && !box.querySelector(".payment-guide-msg")) {
+          const msg = document.createElement("div");
+          msg.className = "payment-guide-msg";
+          msg.style.cssText = "margin-top:12px;padding:12px;background:#e8f5e9;border-radius:8px;font-size:16px;font-weight:700;color:#1b5e20;text-align:center;";
+          msg.textContent = "📲 이제 은행 앱을 열어 위 금액을 입금해 주세요!";
+          box.appendChild(msg);
+        }
+      };
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(doIt).catch(() => fallbackCopy(text, doIt));
       } else {
@@ -983,6 +1115,7 @@
       myOrderId = "";
       stopReadyAlert();
       renderMyOrder();
+      updateStepBadges();
     }
 
     /* ── Firebase 트랜잭션 ── */
@@ -1039,7 +1172,8 @@
       const notice      = document.getElementById("orderNotice");
 
       submitBtn.disabled  = true;
-      submitBtn.innerText = "주문 처리 중...";
+      submitBtn.textContent = "주문 처리 중...";
+      submitBtn.classList.add("processing");
       notice.innerHTML    = "";
 
       try {
@@ -1059,6 +1193,13 @@
         myOrderId = newOrderRef.key;
         localStorage.setItem(LAST_ORDER_KEY, myOrderId);
 
+        // Firebase 리스너 응답 전에도 주문 현황이 즉시 보이도록 로컬에 선반영
+        orders = [...orders, {
+          id: myOrderId,
+          boothId, orderNumber, queueNumber, customerName,
+          items, totalAmount, status: "주문접수", createdAt, createdAtText
+        }];
+
         cart = {};
         renderMenus();
         renderMyOrder();
@@ -1069,6 +1210,7 @@
       } catch (error) {
         notice.innerHTML = `<div class="notice-err">⚠️ 주문 중 오류가 발생했습니다.<br/>${escapeHtml(error.message || "잠시 후 다시 시도해 주세요.")}</div>`;
       } finally {
+        submitBtn.classList.remove("processing");
         updateSubmitButtonState();
       }
     }
@@ -1124,10 +1266,43 @@
         const raw = snap.val() || {};
         orders = Object.keys(raw).map(id => ({ id, ...raw[id] }));
         renderMyOrder();
+        updateStepBadges();
+        updateStepBlockStyles();
         const myOrder = myOrderId ? orders.find(o => o.id === myOrderId) : null;
         if (myOrder && myOrder.status === "준비완료") maybeShowReadyAlert();
         else stopReadyAlert();
       });
+    }
+
+    /* ── 개발자 패널 ── */
+    function renderDevPanel() {
+      if (!DEV_MODE) return;
+      document.getElementById("devPanelWrap").style.display = "block";
+      document.getElementById("devInfo").textContent = [
+        `boothId       : ${boothId}`,
+        `boothPrefix   : ${boothPrefix}`,
+        `myOrderId     : ${myOrderId || "(없음)"}`,
+        `MENU_PATH     : ${MENU_PATH}`,
+        `ORDERS_PATH   : ${ORDERS_PATH}`,
+        `PAYMENT_PATH  : ${PAYMENT_PATH}`,
+        `CONTROL_PATH  : ${CONTROL_PATH}`,
+        `orders 수     : ${orders.length}`,
+        `cart          : ${JSON.stringify(cart)}`,
+        `paymentInfo   : ${JSON.stringify(paymentInfo)}`,
+        `boothControl  : ${JSON.stringify(boothControl)}`,
+      ].join("\n");
+    }
+
+    /* ── 단계 블록 완료 스타일 ── */
+    function updateStepBlockStyles() {
+      const hasName  = !!document.getElementById("customerName").value.trim();
+      const hasOrder = !!myOrderId;
+      const step1 = document.querySelector(".step-block.step1");
+      const step2 = document.querySelector(".step-block.step2");
+      const step3 = document.querySelector(".step-block.step3");
+      if (step1) step1.classList.toggle("step-done", hasName && hasOrder);
+      if (step2) step2.classList.toggle("step-done", hasOrder);
+      if (step3) step3.classList.toggle("step-done", hasOrder);
     }
 
     /* ── 초기화 ── */
@@ -1139,6 +1314,15 @@
     listenPayment();
     listenControl();
     listenOrders();
+    if (DEV_MODE) setInterval(renderDevPanel, 2000);
+
+    // 기존 주문이 있으면 주문 현황으로 자동 스크롤
+    if (myOrderId) {
+      setTimeout(() => {
+        document.getElementById("myOrderBlock")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 900);
+    }
   </script>
 </body>
 </html>
