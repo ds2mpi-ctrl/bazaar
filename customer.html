@@ -688,7 +688,7 @@
       document.getElementById("popupCopied").classList.remove("show");
       const cdEl = document.getElementById("popupCountdown");
       if (cdEl) cdEl.textContent = "";
-      clearInterval(_autoCloseInterval);
+      clearTimeout(_autoCloseInterval);
       document.getElementById("payPopup").classList.add("show");
     }
 
@@ -710,33 +710,27 @@
 
     function _startAutoClose() {
       clearInterval(_autoCloseInterval);
-      let count = 3;
       const el = document.getElementById("popupCountdown");
-      if (el) el.textContent = `${count}초 후 주문 현황으로 자동 이동...`;
-      _autoCloseInterval = setInterval(() => {
-        count--;
-        if (count <= 0) {
-          clearInterval(_autoCloseInterval);
-          closePayPopup();
-        } else {
-          if (el) el.textContent = `${count}초 후 주문 현황으로 자동 이동...`;
-        }
-      }, 1000);
+      if (el) el.textContent = "잠시 후 주문 현황으로 자동 이동합니다...";
+      // setInterval 대신 setTimeout — 모바일에서 더 안정적
+      _autoCloseInterval = setTimeout(() => closePayPopup(), 1600);
     }
 
     function fallbackCopy(text, callback) {
       const ta = document.createElement("textarea");
       ta.value = text;
       ta.setAttribute("readonly","");
-      ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
+      ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;opacity:0;";
       document.body.appendChild(ta);
-      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
-      try { if (document.execCommand("copy") && callback) callback(); } catch { if (callback) callback(); }
+      ta.focus(); ta.select(); ta.setSelectionRange(0, 99999);
+      try { document.execCommand("copy"); } catch {}
       document.body.removeChild(ta);
+      // 복사 성공 여부와 무관하게 항상 콜백 호출 (모바일 호환)
+      if (callback) callback();
     }
 
     function closePayPopup() {
-      clearInterval(_autoCloseInterval);
+      clearTimeout(_autoCloseInterval);
       const cdEl = document.getElementById("popupCountdown");
       if (cdEl) cdEl.textContent = "";
       document.getElementById("payPopup").classList.remove("show");
