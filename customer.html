@@ -660,7 +660,7 @@
       document.getElementById("readyAlertOverlay").classList.add("show");
       playReadyBell();
       readyBellTimer  = setInterval(playReadyBell, 4000);
-      readyAlertTimer = setTimeout(stopReadyAlert, 30000);
+      readyAlertTimer = setTimeout(stopReadyAlert, 20000);
     }
     function maybeShowReadyAlert() {
       if (!myOrderId) return;
