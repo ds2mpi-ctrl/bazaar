@@ -28,25 +28,11 @@
       text-align: center;
       box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
-    .header-title {
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      margin-bottom: 4px;
-    }
-    .header-sub {
-      font-size: 16px;
-      color: rgba(255,255,255,0.82);
-    }
+    .header-title { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .header-sub   { font-size: 16px; color: rgba(255,255,255,0.82); }
 
     /* ── 운영 상태 배너 ── */
-    .status-banner {
-      padding: 15px 20px;
-      font-size: 18px;
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.5;
-    }
+    .status-banner { padding: 15px 20px; font-size: 18px; font-weight: 700; text-align: center; line-height: 1.5; }
     .s-open   { background: #e8f5e9; color: #1b5e20; border-bottom: 3px solid #43a047; }
     .s-paused { background: #fff8e1; color: #bf360c; border-bottom: 3px solid #fb8c00; }
     .s-closed { background: #fce4ec; color: #880e4f; border-bottom: 3px solid #d81b60; }
@@ -54,139 +40,72 @@
     .wrap { max-width: 580px; margin: 0 auto; padding: 0 14px; }
 
     /* ── 단계 공통 ── */
-    .step-block {
-      margin: 18px 0;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    .step-head {
-      padding: 15px 18px;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
+    .step-block { margin: 18px 0; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .step-head  { padding: 15px 18px; display: flex; align-items: center; gap: 13px; }
     .step-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.9);
-      font-size: 20px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.9); font-size: 20px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .step-title {
-      font-size: 20px;
-      font-weight: 900;
-      line-height: 1.3;
-    }
-    .step-body { padding: 18px 18px 20px; }
+    .step-title { font-size: 20px; font-weight: 900; line-height: 1.3; }
+    .step-body  { padding: 18px 18px 20px; }
 
-    /* ── 1단계: 이름 입력 (따뜻한 황토색) ── */
+    /* ── 1단계: 이름 (황토) ── */
     .step1 { background: #fff8e1; border: 2px solid #f9a825; }
     .step1 .step-head { background: #f9a825; color: #3e2000; }
     .step1 .step-badge { color: #3e2000; }
 
-    .name-guide {
-      font-size: 17px;
-      color: #5d4037;
-      margin-bottom: 14px;
-      line-height: 1.65;
-    }
+    .name-guide { font-size: 17px; color: #5d4037; margin-bottom: 14px; line-height: 1.65; }
     .name-input {
-      width: 100%;
-      padding: 16px 18px;
-      font-size: 22px;
-      font-weight: 700;
-      border: 3px solid #f9a825;
-      border-radius: 10px;
-      font-family: inherit;
-      color: #1a1a1a;
-      background: #fff;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; padding: 16px 18px; font-size: 22px; font-weight: 700;
+      border: 3px solid #f9a825; border-radius: 10px; font-family: inherit;
+      color: #1a1a1a; background: #fff; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .name-input:focus {
-      border-color: #e65100;
-      box-shadow: 0 0 0 4px rgba(230,81,0,0.15);
-    }
-    .name-input.filled {
-      border-color: #2e7d32;
-      background: #f1f8e9;
-    }
+    .name-input:focus { border-color: #e65100; box-shadow: 0 0 0 4px rgba(230,81,0,0.15); }
+    .name-input.filled { border-color: #2e7d32; background: #f1f8e9; }
     @keyframes namePulse {
       0%,100% { border-color: #f9a825; }
       50%      { border-color: #e53935; box-shadow: 0 0 0 6px rgba(229,57,53,0.2); }
     }
     .name-input.prompt { animation: namePulse 0.55s ease 3; }
-    .name-ok {
-      margin-top: 10px;
-      font-size: 17px;
-      color: #2e7d32;
-      font-weight: 700;
-      display: none;
-    }
+    .name-ok { margin-top: 10px; font-size: 17px; color: #2e7d32; font-weight: 700; display: none; }
     .name-ok.show { display: block; }
 
-    /* ── 2단계: 메뉴 선택 (파란 계열) ── */
+    /* ── 2단계: 메뉴 (파랑) ── */
     .step2 { background: #e8f4fd; border: 2px solid #1565c0; }
     .step2 .step-head { background: #1565c0; color: #fff; }
     .step2 .step-badge { color: #1565c0; }
-    .step2-guide {
-      font-size: 16px;
-      color: #0d3b6e;
-      margin-bottom: 14px;
-    }
+    .step2-guide { font-size: 16px; color: #0d3b6e; margin-bottom: 14px; }
 
-    .menu-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 11px;
-    }
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    @media (max-width: 360px) { .menu-grid { grid-template-columns: 1fr; } }
+    @media (min-width: 520px) { .menu-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
     .menu-card {
-      background: #fff;
-      border: 2px solid #90caf9;
-      border-radius: 11px;
-      padding: 15px 13px 13px;
-      cursor: pointer;
-      transition: transform 0.12s, border-color 0.12s;
-      position: relative;
+      background: #fff; border: 2px solid #90caf9; border-radius: 11px;
+      padding: 15px 13px 13px; cursor: pointer; transition: transform 0.12s, border-color 0.12s; position: relative;
     }
-    .menu-card:active:not(.disabled) { transform: scale(0.97); }
-    .menu-card.in-cart  { border-color: #1565c0; background: #e3f2fd; }
-    .menu-card.disabled { opacity: 0.5; cursor: not-allowed; background: #f5f5f5; }
-    .menu-card.name-locked { opacity: 0.65; }
-
-    /* 메뉴 카드 순번별 상단 컬러 라인 — 인간적 차별화 */
     .menu-card:nth-child(6n+1) { border-top: 4px solid #f9a825; }
     .menu-card:nth-child(6n+2) { border-top: 4px solid #1565c0; }
     .menu-card:nth-child(6n+3) { border-top: 4px solid #2e7d32; }
     .menu-card:nth-child(6n+4) { border-top: 4px solid #b03a2e; }
     .menu-card:nth-child(6n+5) { border-top: 4px solid #6a1b9a; }
     .menu-card:nth-child(6n+0) { border-top: 4px solid #00838f; }
+    .menu-card:active:not(.disabled) { transform: scale(0.97); }
+    .menu-card.in-cart  { border-color: #1565c0; background: #e3f2fd; }
+    .menu-card.disabled { opacity: 0.5; cursor: not-allowed; background: #f5f5f5; }
+    .menu-card.name-locked { opacity: 0.65; }
 
     .menu-name  { font-size: 18px; font-weight: 800; color: #0d47a1; margin-bottom: 5px; word-break: keep-all; }
     .menu-price { font-size: 20px; font-weight: 900; color: #b03a2e; margin-bottom: 5px; }
     .menu-stock { font-size: 16px; color: #555; }
     .menu-stock.soldout { color: #c62828; font-weight: 700; }
 
-    .qty-ctrl {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 11px;
-    }
+    .qty-ctrl { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 11px; }
     .qty-btn {
-      width: 40px; height: 40px;
-      border: none; border-radius: 8px;
-      font-size: 22px; font-weight: 900;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      width: 40px; height: 40px; border: none; border-radius: 8px;
+      font-size: 22px; font-weight: 900; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .qty-btn.minus { background: #dde3ea; color: #333; }
     .qty-btn.plus  { background: #1565c0; color: #fff; }
@@ -194,396 +113,306 @@
     .qty-num { font-size: 22px; font-weight: 900; color: #1565c0; min-width: 26px; text-align: center; }
 
     .add-btn {
-      width: 100%;
-      margin-top: 11px;
-      padding: 14px 6px;
-      border: 2px dashed #90caf9;
-      border-radius: 8px;
-      background: transparent;
-      color: #1565c0;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.12s;
+      width: 100%; margin-top: 11px; padding: 14px 6px;
+      border: 2px dashed #90caf9; border-radius: 8px; background: transparent;
+      color: #1565c0; font-size: 17px; font-weight: 800; cursor: pointer;
+      font-family: inherit; transition: background 0.12s;
     }
     .add-btn:hover { background: #e3f2fd; border-style: solid; }
 
-    /* ── 3단계: 장바구니 & 주문 (초록 계열) ── */
+    /* ── 3단계: 장바구니 & 주문 (초록) ── */
     .step3 { background: #e8f5e9; border: 2px solid #2e7d32; }
     .step3 .step-head { background: #2e7d32; color: #fff; }
     .step3 .step-badge { color: #2e7d32; }
 
     .cart-empty {
-      text-align: center;
-      padding: 22px 16px;
-      font-size: 17px;
-      color: #555;
-      background: #fff;
-      border-radius: 10px;
-      border: 2px dashed #a5d6a7;
+      text-align: center; padding: 22px 16px; font-size: 17px; color: #555;
+      background: #fff; border-radius: 10px; border: 2px dashed #a5d6a7;
     }
-
     .cart-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 0;
-      border-bottom: 1px solid #c8e6c9;
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 0; border-bottom: 1px solid #c8e6c9;
     }
     .cart-item:last-child { border-bottom: none; }
     .cart-item-info { flex: 1; }
     .cart-item-name { font-size: 18px; font-weight: 800; }
     .cart-item-sub  { font-size: 16px; color: #555; margin-top: 3px; }
     .cart-qty-wrap  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-    .cqb {
-      width: 40px; height: 40px;
-      border: none; border-radius: 8px;
-      font-size: 22px; font-weight: 900; cursor: pointer;
-    }
+    .cqb { width: 40px; height: 40px; border: none; border-radius: 8px; font-size: 22px; font-weight: 900; cursor: pointer; }
     .cqb.minus { background: #dde3ea; color: #333; }
     .cqb.plus  { background: #2e7d32; color: #fff; }
     .cqb-num   { font-size: 20px; font-weight: 900; min-width: 26px; text-align: center; }
 
     .cart-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 0 4px;
-      border-top: 2px solid #a5d6a7;
-      margin-top: 4px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 0 4px; border-top: 2px solid #a5d6a7; margin-top: 4px;
     }
     .cart-total-label  { font-size: 19px; font-weight: 700; }
     .cart-total-amount { font-size: 28px; font-weight: 900; color: #b03a2e; }
-
     .clear-btn {
-      background: none; border: none;
-      color: #888; font-size: 16px;
-      text-decoration: underline;
-      cursor: pointer; font-family: inherit; padding: 0; margin-top: 6px;
+      background: none; border: none; color: #888; font-size: 16px;
+      text-decoration: underline; cursor: pointer; font-family: inherit; padding: 0; margin-top: 6px;
     }
 
-    /* 주문하기 버튼 — 아주 크고 눈에 띄게 */
+    /* 주문 버튼 */
     .order-btn {
-      width: 100%;
-      padding: 20px 16px;
-      margin-top: 18px;
-      border: none;
-      border-radius: 13px;
-      font-size: 22px;
-      font-weight: 900;
-      cursor: pointer;
-      font-family: inherit;
-      background: #b03a2e;
-      color: #fff;
-      letter-spacing: -0.3px;
+      width: 100%; padding: 20px 16px; margin-top: 18px; border: none; border-radius: 13px;
+      font-size: 22px; font-weight: 900; cursor: pointer; font-family: inherit;
+      background: #b03a2e; color: #fff; letter-spacing: -0.3px;
       transition: opacity 0.15s, transform 0.12s;
     }
     .order-btn:active:not(:disabled) { transform: scale(0.98); opacity: 0.9; }
     .order-btn:disabled { background: #bdbdbd; color: #fff; cursor: not-allowed; }
 
-    /* ── 4단계: 결제 정보 (보라 계열) ── */
-    .step4 { background: #f3e5f5; border: 2px solid #6a1b9a; }
-    .step4 .step-head { background: #6a1b9a; color: #fff; }
-    .step4 .step-badge { color: #6a1b9a; }
-
-    .pay-bank    { font-size: 16px; color: #5c3566; margin-bottom: 3px; }
-    .pay-acct    { font-size: 28px; font-weight: 900; color: #1a1a1a; margin-bottom: 4px; letter-spacing: 0.5px; }
-    .pay-owner   { font-size: 17px; color: #5c3566; margin-bottom: 16px; }
-    .pay-notice  {
-      background: #fff;
-      border: 1px solid #ce93d8;
-      border-radius: 9px;
-      padding: 12px 14px;
-      font-size: 16px;
-      color: #4a148c;
-      margin-bottom: 14px;
-      line-height: 1.65;
+    .notice-err {
+      background: #fce4ec; border: 2px solid #ef9a9a; border-radius: 10px;
+      padding: 16px; font-size: 17px; color: #880e4f; line-height: 1.7; margin-top: 14px;
     }
-    .copy-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 22px;
-      border: 2px solid #6a1b9a;
-      border-radius: 10px;
-      background: #fff;
-      color: #6a1b9a;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .copy-btn:active { background: #f3e5f5; }
 
     /* ── 내 주문 현황 ── */
     .my-order-block {
-      margin: 18px 0;
-      background: #fff;
-      border: 3px solid #37474f;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 18px 0; background: #fff; border: 3px solid #37474f;
+      border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-    .my-order-head {
-      background: #37474f;
-      color: #fff;
-      padding: 15px 18px;
-      font-size: 20px;
-      font-weight: 900;
-    }
+    .my-order-head { background: #37474f; color: #fff; padding: 15px 18px; font-size: 20px; font-weight: 900; }
     .my-order-body { padding: 18px; }
 
-    .order-num-big  { font-size: 34px; font-weight: 900; color: #b03a2e; margin-bottom: 5px; }
-    .order-time-sm  { font-size: 16px; color: #777; margin-bottom: 16px; }
+    .order-num-big { font-size: 34px; font-weight: 900; color: #b03a2e; margin-bottom: 5px; }
+    .order-time-sm { font-size: 16px; color: #777; margin-bottom: 16px; }
 
-    /* 상태 큰 표시 */
     .status-box {
-      padding: 18px 16px;
-      border-radius: 11px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: 900;
-      margin-bottom: 14px;
-      line-height: 1.4;
+      padding: 18px 16px; border-radius: 11px; text-align: center;
+      font-size: 22px; font-weight: 900; margin-bottom: 14px; line-height: 1.4;
     }
-    .st-주문접수 { background: #f5f5f5; color: #37474f; }
+    .st-주문접수 { background: #fff3e0; color: #e65100; border: 2px solid #ffb74d; }
     .st-입금확인 { background: #e3f2fd; color: #1565c0; }
-    .st-준비중  { background: #fff3e0; color: #bf360c; }
+    .st-준비중  { background: #fff8e1; color: #bf360c; }
     .st-준비완료 { background: #e8f5e9; color: #2e7d32; }
     .st-수령완료 { background: #f5f5f5; color: #757575; }
     .st-취소   { background: #fce4ec; color: #c62828; }
 
-    .ahead-box {
-      background: #fffde7;
+    /* 입금 안내 박스 — 주문접수 상태일 때 강조 */
+    .payment-needed-box {
+      background: #fff8e1;
       border: 2px solid #f9a825;
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-size: 18px;
-      font-weight: 700;
-      color: #4e2800;
+      border-radius: 12px;
+      padding: 16px 18px;
       margin-bottom: 14px;
     }
+    .payment-needed-title { font-size: 19px; font-weight: 900; color: #3e2000; margin-bottom: 8px; }
+    .payment-needed-acct  { font-size: 24px; font-weight: 900; color: #1a1a1a; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .payment-needed-owner { font-size: 16px; color: #5d4037; margin-bottom: 12px; }
 
-    .order-items {
-      font-size: 17px;
-      color: #333;
-      line-height: 2;
-      padding: 14px 0;
-      border-top: 1px solid #e0e0e0;
-      border-bottom: 1px solid #e0e0e0;
-      margin-bottom: 14px;
+    .copy-acct-btn {
+      width: 100%; padding: 16px; border: none; border-radius: 10px;
+      background: #f9a825; color: #3e2000; font-size: 19px; font-weight: 900;
+      cursor: pointer; font-family: inherit;
     }
-    .order-total-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 20px;
-      font-weight: 900;
-      color: #b03a2e;
-      margin-bottom: 16px;
+    .copy-acct-btn:active { opacity: 0.85; }
+
+    .ahead-box {
+      background: #fffde7; border: 2px solid #f9a825; border-radius: 10px;
+      padding: 14px 16px; font-size: 18px; font-weight: 700; color: #4e2800; margin-bottom: 14px;
     }
 
-    .act-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-    .act-btn {
-      padding: 13px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .act-blue { background: #e3f2fd; color: #1565c0; }
-    .act-gray { background: #f0f0f0; color: #555; }
-
-    /* ── 알림 박스 ── */
-    .notice-ok {
-      background: #e8f5e9;
-      border: 2px solid #66bb6a;
-      border-radius: 10px;
-      padding: 16px;
-      font-size: 17px;
-      color: #1b5e20;
-      line-height: 1.7;
-      margin-top: 14px;
-    }
-    .notice-err {
-      background: #fce4ec;
-      border: 2px solid #ef9a9a;
-      border-radius: 10px;
-      padding: 16px;
-      font-size: 17px;
-      color: #880e4f;
-      line-height: 1.7;
-      margin-top: 14px;
-    }
-
-    /* ── 빈 상태 ── */
-    .empty-box {
-      text-align: center;
-      padding: 22px;
-      color: #777;
-      font-size: 17px;
-      background: #fafafa;
-      border-radius: 10px;
-      border: 2px dashed #ddd;
-    }
-
-    /* ── 하단 장바구니 바 ── */
-    .cart-bar {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 200;
-      padding: 14px 18px;
-      padding-bottom: max(14px, env(safe-area-inset-bottom));
-      background: #3e2000;
-      box-shadow: 0 -3px 16px rgba(0,0,0,0.22);
-      display: none;
-    }
-    .cart-bar.visible { display: block; }
-    .cart-bar-inner {
-      max-width: 580px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .cart-bar-info   { flex: 1; color: #fff; }
-    .cart-bar-count  { font-size: 16px; color: rgba(255,255,255,0.85); }
-    .cart-bar-total  { font-size: 20px; font-weight: 900; }
-    .cart-bar-btn {
-      border: none;
-      border-radius: 10px;
-      padding: 14px 22px;
-      background: #b03a2e;
-      color: #fff;
-      font-size: 18px;
-      font-weight: 900;
-      cursor: pointer;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-
-    /* ── 반응형 ── */
-    @media (max-width: 360px) {
-      body { font-size: 17px; }
-      .menu-grid { grid-template-columns: 1fr; }
-      .step-title { font-size: 18px; }
-      .order-btn { font-size: 20px; padding: 18px 14px; }
-    }
-    @media (min-width: 520px) {
-      .menu-grid { grid-template-columns: 1fr 1fr 1fr; }
-    }
-
-    /* ── 진행 스텝 표시 ── */
-    .progress-steps {
-      display: flex;
-      align-items: flex-start;
-      margin: 0 0 16px;
-    }
+    /* 진행 스텝 */
+    .progress-steps { display: flex; align-items: flex-start; margin: 0 0 14px; }
     .ps-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      position: relative;
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: 5px; position: relative;
     }
     .ps-item::after {
-      content: '';
-      position: absolute;
-      top: 11px; left: 50%; right: -50%;
-      height: 3px;
-      background: #ddd;
-      z-index: 0;
+      content: ''; position: absolute; top: 11px; left: 50%; right: -50%;
+      height: 3px; background: #ddd; z-index: 0;
     }
     .ps-item:last-child::after { display: none; }
     .ps-item.done::after { background: #2e7d32; }
     .ps-dot {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      border: 3px solid #ddd;
-      background: #fff;
-      z-index: 1;
-      display: flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%; border: 3px solid #ddd;
+      background: #fff; z-index: 1; display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 900;
     }
     .ps-item.done .ps-dot    { background: #2e7d32; border-color: #2e7d32; color: #fff; }
     .ps-item.current .ps-dot { background: #fff; border-color: #b03a2e; border-width: 3px; }
     .ps-label {
       font-size: 14px; color: #888; font-weight: 700;
-      text-align: center; white-space: nowrap;
-      line-height: 1.3;
+      text-align: center; white-space: nowrap; line-height: 1.3;
     }
     .ps-item.done .ps-label    { color: #2e7d32; }
     .ps-item.current .ps-label { color: #b03a2e; font-weight: 900; }
 
-    /* ── 토스트 알림 ── */
+    .order-items {
+      font-size: 17px; color: #333; line-height: 2;
+      padding: 14px 0; border-top: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e0e0e0; margin-bottom: 14px;
+    }
+    .order-total-row {
+      display: flex; justify-content: space-between;
+      font-size: 20px; font-weight: 900; color: #b03a2e; margin-bottom: 16px;
+    }
+    .act-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .act-btn {
+      padding: 13px 20px; border: none; border-radius: 10px;
+      font-size: 17px; font-weight: 800; cursor: pointer; font-family: inherit;
+    }
+    .act-blue { background: #e3f2fd; color: #1565c0; }
+    .act-gray { background: #f0f0f0; color: #555; }
+
+    .empty-box {
+      text-align: center; padding: 22px; color: #777; font-size: 17px;
+      background: #fafafa; border-radius: 10px; border: 2px dashed #ddd;
+    }
+
+    /* ── 하단 장바구니 바 ── */
+    .cart-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      padding: 14px 18px;
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      background: #3e2000; box-shadow: 0 -3px 16px rgba(0,0,0,0.22); display: none;
+    }
+    .cart-bar.visible { display: block; }
+    .cart-bar-inner { max-width: 580px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+    .cart-bar-info  { flex: 1; color: #fff; }
+    .cart-bar-count { font-size: 16px; color: rgba(255,255,255,0.85); }
+    .cart-bar-total { font-size: 20px; font-weight: 900; }
+    .cart-bar-btn {
+      border: none; border-radius: 10px; padding: 14px 22px;
+      background: #b03a2e; color: #fff; font-size: 18px; font-weight: 900;
+      cursor: pointer; font-family: inherit; white-space: nowrap;
+    }
+
+    /* ── 토스트 ── */
     .toast {
-      position: fixed;
-      bottom: 80px; left: 50%;
+      position: fixed; bottom: 80px; left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: rgba(30,30,30,0.9);
-      color: #fff;
-      padding: 13px 22px;
-      border-radius: 30px;
-      font-size: 16px;
-      font-weight: 700;
-      z-index: 9000;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.25s, transform 0.25s;
-      white-space: nowrap;
+      background: rgba(30,30,30,0.9); color: #fff;
+      padding: 13px 22px; border-radius: 30px; font-size: 16px; font-weight: 700;
+      z-index: 9000; pointer-events: none; opacity: 0;
+      transition: opacity 0.25s, transform 0.25s; white-space: nowrap;
     }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── 주문 완료 입금 안내 팝업 ── */
+    .pay-popup-overlay {
+      position: fixed; inset: 0; z-index: 8000;
+      background: rgba(0,0,0,0.72);
+      display: none; align-items: center; justify-content: center; padding: 20px;
     }
+    .pay-popup-overlay.show { display: flex; }
+    .pay-popup {
+      width: min(94vw, 520px);
+      background: #fff; border-radius: 20px;
+      padding: 28px 24px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .pay-popup-badge {
+      text-align: center; font-size: 46px; margin-bottom: 8px;
+    }
+    .pay-popup-title {
+      font-size: 24px; font-weight: 900; color: #b03a2e;
+      text-align: center; margin-bottom: 6px; line-height: 1.35;
+    }
+    .pay-popup-sub {
+      font-size: 17px; color: #555; text-align: center;
+      margin-bottom: 22px; line-height: 1.6;
+    }
+    .pay-popup-order-num {
+      background: #f5f0ea; border-radius: 10px; padding: 12px 16px;
+      text-align: center; font-size: 26px; font-weight: 900;
+      color: #b03a2e; margin-bottom: 20px; letter-spacing: 1px;
+    }
+    .pay-popup-box {
+      background: #fff8e1; border: 2px solid #f9a825;
+      border-radius: 14px; padding: 18px; margin-bottom: 18px;
+    }
+    .pay-popup-label  { font-size: 15px; color: #8a5b00; font-weight: 700; margin-bottom: 5px; }
+    .pay-popup-bank   { font-size: 17px; color: #555; margin-bottom: 4px; }
+    .pay-popup-acct   { font-size: 30px; font-weight: 900; color: #1a1a1a; margin-bottom: 4px; letter-spacing: 1px; }
+    .pay-popup-owner  { font-size: 16px; color: #8a5b00; margin-bottom: 16px; }
+    .pay-popup-amount {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #fff3e0; border-radius: 9px; padding: 12px 14px; margin-bottom: 14px;
+    }
+    .pay-popup-amount-label { font-size: 17px; color: #5d4037; font-weight: 700; }
+    .pay-popup-amount-val   { font-size: 24px; font-weight: 900; color: #b03a2e; }
+
+    .pay-popup-copy-btn {
+      width: 100%; padding: 18px; border: none; border-radius: 12px;
+      background: #f9a825; color: #3e2000; font-size: 20px; font-weight: 900;
+      cursor: pointer; font-family: inherit; margin-bottom: 0;
+    }
+    .pay-popup-copy-btn:active { opacity: 0.85; }
+    .pay-popup-copied {
+      display: none; text-align: center; color: #2e7d32;
+      font-size: 17px; font-weight: 700; margin-top: 10px;
+    }
+    .pay-popup-copied.show { display: block; }
+
+    .pay-popup-confirm-btn {
+      width: 100%; padding: 18px; border: none; border-radius: 12px;
+      background: #2e7d32; color: #fff; font-size: 20px; font-weight: 900;
+      cursor: pointer; font-family: inherit; margin-top: 12px;
+    }
+    .pay-popup-confirm-btn:active { opacity: 0.88; }
 
     /* ── 준비완료 팝업 ── */
     .ready-overlay {
-      position: fixed;
-      inset: 0; z-index: 9999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      animation: readyFlash 0.8s infinite;
+      position: fixed; inset: 0; z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px; animation: readyFlash 0.8s infinite;
     }
     .ready-overlay.show { display: flex; }
     .ready-box {
-      width: min(92vw, 580px);
-      text-align: center;
-      background: rgba(255,255,255,0.16);
-      border: 3px solid rgba(255,255,255,0.8);
-      border-radius: 22px;
-      padding: 38px 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      width: min(92vw, 580px); text-align: center;
+      background: rgba(255,255,255,0.16); border: 3px solid rgba(255,255,255,0.8);
+      border-radius: 22px; padding: 38px 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     }
     .ready-title {
-      font-size: clamp(2rem, 8vw, 3.4rem);
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.3;
-      word-break: keep-all;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      font-size: clamp(2rem, 8vw, 3.4rem); font-weight: 900; color: #fff;
+      line-height: 1.3; word-break: keep-all; text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
-    .ready-sub {
-      margin-top: 14px;
-      font-size: clamp(1rem, 3.5vw, 1.3rem);
-      font-weight: 700;
-      color: rgba(255,255,255,0.95);
-    }
+    .ready-sub { margin-top: 14px; font-size: clamp(1rem, 3.5vw, 1.3rem); font-weight: 700; color: rgba(255,255,255,0.95); }
     @keyframes readyFlash {
       0%,100% { background: rgba(176,58,46,0.93); }
       50%      { background: rgba(255,243,176,0.97); }
+    }
+
+    /* 반응형 */
+    @media (max-width: 360px) {
+      body { font-size: 17px; }
+      .step-title { font-size: 18px; }
+      .order-btn  { font-size: 20px; padding: 18px 14px; }
+      .pay-popup-acct  { font-size: 24px; }
+      .pay-popup-title { font-size: 20px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 토스트 알림 -->
+  <!-- 토스트 -->
   <div class="toast" id="toast"></div>
+
+  <!-- 주문완료 입금 안내 팝업 -->
+  <div class="pay-popup-overlay" id="payPopup">
+    <div class="pay-popup">
+      <div class="pay-popup-badge">🎉</div>
+      <div class="pay-popup-title">주문이 완료되었습니다!</div>
+      <div class="pay-popup-sub">아래 계좌로 입금하시면 주문이 완료됩니다.<br><span style="font-size:15px;color:#888;">⚠️ 이 창을 닫으면 QR코드를 다시 찍어야 합니다</span></div>
+      <div class="pay-popup-order-num" id="popupOrderNum">A-001</div>
+      <div class="pay-popup-box">
+        <div class="pay-popup-label">💳 입금 계좌</div>
+        <div class="pay-popup-bank" id="popupBank"></div>
+        <div class="pay-popup-acct" id="popupAcct"></div>
+        <div class="pay-popup-owner" id="popupOwner"></div>
+        <div class="pay-popup-amount">
+          <span class="pay-popup-amount-label">입금할 금액</span>
+          <span class="pay-popup-amount-val" id="popupAmount"></span>
+        </div>
+        <button class="pay-popup-copy-btn" id="popupCopyBtn" onclick="popupCopy()">📋 계좌번호 복사하기</button>
+        <div class="pay-popup-copied" id="popupCopied">✅ 복사되었습니다! 이제 입금해 주세요</div>
+      </div>
+      <button class="pay-popup-confirm-btn" onclick="closePayPopup()">✓ 입금할게요 — 주문 현황 보기</button>
+    </div>
+  </div>
 
   <!-- 준비완료 팝업 -->
   <div class="ready-overlay" id="readyAlertOverlay">
@@ -615,7 +444,7 @@
 
   <div class="wrap">
 
-    <!-- 1단계: 이름 입력 -->
+    <!-- 1단계: 이름 -->
     <div class="step-block step1">
       <div class="step-head">
         <div class="step-badge">1</div>
@@ -644,7 +473,7 @@
       </div>
     </div>
 
-    <!-- 3단계: 확인 및 주문 -->
+    <!-- 3단계: 장바구니 & 주문 -->
     <div class="step-block step3" id="cartSection">
       <div class="step-head">
         <div class="step-badge">3</div>
@@ -667,20 +496,12 @@
       </div>
     </div>
 
-    <!-- 4단계: 결제 정보 -->
-    <div class="step-block step4" id="paymentSection">
-      <div class="step-head">
-        <div class="step-badge">4</div>
-        <div class="step-title">이 계좌로 결제해 주세요</div>
-      </div>
-      <div class="step-body">
-        <div id="paymentInfo">불러오는 중...</div>
-      </div>
-    </div>
-
     <!-- 내 주문 현황 -->
-    <div class="my-order-block">
+    <div class="my-order-block" id="myOrderBlock">
       <div class="my-order-head">📦 내 주문 현황</div>
+      <div style="background:#fff8e1;border-bottom:1px solid #ffe082;padding:11px 18px;font-size:16px;color:#5d4037;line-height:1.6;">
+        📱 진행 상황을 보시려면 이 창을 열어두거나, QR코드를 다시 찍어 열어 주세요.
+      </div>
       <div class="my-order-body">
         <div id="myOrderBox"></div>
       </div>
@@ -726,6 +547,7 @@
     let readyAudioCtx  = null;
     let readyAlertTimer = null;
     let readyBellTimer  = null;
+    let popupAcctText  = "";
 
     /* ── 토스트 ── */
     let toastTimer = null;
@@ -735,7 +557,7 @@
       el.textContent = msg;
       el.classList.add("show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2000);
     }
 
     function escapeHtml(str = "") {
@@ -744,7 +566,6 @@
         .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
     }
     function currency(n) { return Number(n || 0).toLocaleString() + "원"; }
-
     function formatDateTime(ts) {
       if (!ts) return "";
       const d = new Date(ts);
@@ -760,8 +581,7 @@
     }
     function unlockReadyAudio() {
       initReadyAudio();
-      if (readyAudioCtx && readyAudioCtx.state === "suspended")
-        readyAudioCtx.resume().catch(() => {});
+      if (readyAudioCtx && readyAudioCtx.state === "suspended") readyAudioCtx.resume().catch(() => {});
     }
     ["click","touchstart","keydown"].forEach(evt =>
       document.addEventListener(evt, unlockReadyAudio, { once: true, passive: true })
@@ -771,30 +591,22 @@
       if (!readyAudioCtx) return;
       if (readyAudioCtx.state === "suspended") readyAudioCtx.resume().catch(() => {});
       const now   = readyAudioCtx.currentTime;
-      const tones = [
-        { t: 0.00, f: 1318.51, d: 0.18 },
-        { t: 0.20, f: 1567.98, d: 0.18 },
-        { t: 0.42, f: 2093.00, d: 0.32 }
-      ];
+      const tones = [{ t:0.00, f:1318.51, d:0.18 }, { t:0.20, f:1567.98, d:0.18 }, { t:0.42, f:2093.00, d:0.32 }];
       tones.forEach(({ t, f, d }) => {
-        const osc  = readyAudioCtx.createOscillator();
+        const osc = readyAudioCtx.createOscillator();
         const gain = readyAudioCtx.createGain();
         osc.type = "sine";
         osc.frequency.setValueAtTime(f, now + t);
         gain.gain.setValueAtTime(0.0001, now + t);
         gain.gain.exponentialRampToValueAtTime(0.18, now + t + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + t + d);
-        osc.connect(gain);
-        gain.connect(readyAudioCtx.destination);
-        osc.start(now + t);
-        osc.stop(now + t + d + 0.02);
+        osc.connect(gain); gain.connect(readyAudioCtx.destination);
+        osc.start(now + t); osc.stop(now + t + d + 0.02);
       });
     }
     function stopReadyAlert() {
-      clearTimeout(readyAlertTimer);
-      clearInterval(readyBellTimer);
-      readyAlertTimer = null;
-      readyBellTimer  = null;
+      clearTimeout(readyAlertTimer); clearInterval(readyBellTimer);
+      readyAlertTimer = null; readyBellTimer = null;
       document.getElementById("readyAlertOverlay").classList.remove("show");
     }
     function startReadyAlert() {
@@ -814,16 +626,52 @@
       startReadyAlert();
     }
 
-    /* ── 시간 파싱 ── */
-    function parseTimeToMinutes(hhmm) {
-      if (!hhmm || !hhmm.includes(":")) return null;
-      const [h, m] = hhmm.split(":").map(Number);
-      if (Number.isNaN(h) || Number.isNaN(m)) return null;
-      return h * 60 + m;
+    /* ── 입금 안내 팝업 ── */
+    function showPayPopup(orderNumber, totalAmount) {
+      const bn = paymentInfo.bankName      || "";
+      const an = paymentInfo.accountNumber || "";
+      const ao = paymentInfo.accountOwner  || paymentInfo.accountHolder || "";
+      popupAcctText = `${bn} ${an}`;
+
+      document.getElementById("popupOrderNum").textContent = orderNumber;
+      document.getElementById("popupBank").textContent     = bn;
+      document.getElementById("popupAcct").textContent     = an;
+      document.getElementById("popupOwner").textContent    = ao ? `통장 이름: ${ao}` : "";
+      document.getElementById("popupAmount").textContent   = currency(totalAmount);
+      document.getElementById("popupCopied").classList.remove("show");
+      document.getElementById("payPopup").classList.add("show");
     }
-    function currentMinutes() {
-      const now = new Date();
-      return now.getHours() * 60 + now.getMinutes();
+
+    function popupCopy() {
+      if (!popupAcctText) return;
+      const doCopy = () => {
+        document.getElementById("popupCopied").classList.add("show");
+        document.getElementById("popupCopyBtn").textContent = "✅ 복사됨";
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(popupAcctText).then(doCopy).catch(() => fallbackCopy(popupAcctText, doCopy));
+      } else {
+        fallbackCopy(popupAcctText, doCopy);
+      }
+    }
+
+    function fallbackCopy(text, callback) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly","");
+      ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+      try { if (document.execCommand("copy") && callback) callback(); } catch {}
+      document.body.removeChild(ta);
+    }
+
+    function closePayPopup() {
+      document.getElementById("payPopup").classList.remove("show");
+      document.getElementById("popupCopyBtn").textContent = "📋 계좌번호 복사하기";
+      setTimeout(() => {
+        document.getElementById("myOrderBlock").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200);
     }
 
     /* ── 이름 ── */
@@ -834,9 +682,7 @@
     }
     function saveCustomerName() {
       localStorage.setItem(CUSTOMER_NAME_KEY, document.getElementById("customerName").value.trim());
-      updateNameStyle();
-      updateSubmitButtonState();
-      renderMenus();
+      updateNameStyle(); updateSubmitButtonState(); renderMenus();
     }
     function updateNameStyle() {
       const input  = document.getElementById("customerName");
@@ -848,22 +694,27 @@
     document.getElementById("customerName").addEventListener("input", saveCustomerName);
 
     /* ── 주문 가능 여부 ── */
+    function parseTimeToMinutes(hhmm) {
+      if (!hhmm || !hhmm.includes(":")) return null;
+      const [h, m] = hhmm.split(":").map(Number);
+      if (Number.isNaN(h) || Number.isNaN(m)) return null;
+      return h * 60 + m;
+    }
+    function currentMinutes() { const n = new Date(); return n.getHours()*60+n.getMinutes(); }
+
     function getOrderAvailability(control = boothControl) {
       const mode = control.mode || "auto";
-      if (mode === "open")   return { canOrder: true,  title: "주문 가능",   desc: control.message || "지금 주문하실 수 있습니다." };
-      if (mode === "paused") return { canOrder: false, title: "잠시 대기",   desc: control.message || "잠시 후 다시 시도해 주세요." };
-      if (mode === "closed") return { canOrder: false, title: "주문 마감",   desc: control.message || "현재 주문을 받지 않습니다." };
-
+      if (mode === "open")   return { canOrder: true,  title: "주문 가능",  desc: control.message || "지금 주문하실 수 있습니다." };
+      if (mode === "paused") return { canOrder: false, title: "잠시 대기",  desc: control.message || "잠시 후 다시 시도해 주세요." };
+      if (mode === "closed") return { canOrder: false, title: "주문 마감",  desc: control.message || "현재 주문을 받지 않습니다." };
       const openMin  = parseTimeToMinutes(control.openAt);
       const closeMin = parseTimeToMinutes(control.closeAt);
       const nowMin   = currentMinutes();
-
       if (openMin  !== null && nowMin < openMin)  return { canOrder: false, title: `아직 시작 전 (${control.openAt})`,  desc: control.message || "시작 시간 이후 주문 가능합니다." };
       if (closeMin !== null && nowMin >= closeMin) return { canOrder: false, title: `주문 마감 (${control.closeAt})`,    desc: control.message || "주문이 마감되었습니다." };
-      return { canOrder: true, title: "주문 가능", desc: control.message || "메뉴를 선택해서 주문해 주세요." };
+      return { canOrder: true, title: "주문 가능", desc: control.message || "물건을 골라서 주문해 주세요." };
     }
 
-    /* ── 헤더/배너 ── */
     function renderHeaderStatus() {
       const info     = getOrderAvailability();
       const bannerEl = document.getElementById("statusBanner");
@@ -877,46 +728,6 @@
       updateSubmitButtonState();
     }
 
-    /* ── 결제 정보 ── */
-    function renderPaymentInfo() {
-      const el = document.getElementById("paymentInfo");
-      const bn = paymentInfo.bankName      || "";
-      const an = paymentInfo.accountNumber || "";
-      const ao = paymentInfo.accountOwner  || paymentInfo.accountHolder || "";
-      const nt = paymentInfo.notice        || "";
-      if (!bn && !an && !ao) {
-        el.innerHTML = `<div class="empty-box">결제 안내가 아직 등록되지 않았습니다.</div>`;
-        return;
-      }
-      const acctText = `${bn} ${an}`;
-      el.innerHTML = `
-        <div class="pay-bank">${escapeHtml(bn)}</div>
-        <div class="pay-acct">${escapeHtml(an)}</div>
-        <div class="pay-owner">통장 이름: ${escapeHtml(ao)}</div>
-        ${nt ? `<div class="pay-notice">${escapeHtml(nt)}</div>` : ""}
-        <button class="copy-btn" onclick="copyText('${escapeHtml(acctText)}')">📋 계좌번호 복사하기</button>
-      `;
-    }
-
-    function copyText(text) {
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => alert("복사되었습니다.")).catch(() => fallbackCopyText(text));
-      } else {
-        fallbackCopyText(text);
-      }
-    }
-    function fallbackCopyText(text) {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly","");
-      ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;";
-      document.body.appendChild(ta);
-      ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
-      try { document.execCommand("copy") ? alert("복사되었습니다.") : alert("복사에 실패했습니다."); }
-      catch { alert("복사에 실패했습니다."); }
-      document.body.removeChild(ta);
-    }
-
     /* ── 메뉴 렌더링 ── */
     function getCartQty(menuId) { return Number(cart[menuId] || 0); }
 
@@ -924,43 +735,38 @@
       const wrap  = document.getElementById("menuList");
       const menus = Object.entries(menuMap)
         .filter(([_, m]) => m && m.active !== false)
-        .sort((a, b) => String(a[1].name || "").localeCompare(String(b[1].name || ""), "ko"));
+        .sort((a, b) => String(a[1].name||"").localeCompare(String(b[1].name||""), "ko"));
 
       if (!menus.length) {
         wrap.innerHTML = `<div class="empty-box" style="grid-column:1/-1">현재 주문 가능한 물건이 없습니다.</div>`;
-        updateCartDisplay();
-        return;
+        updateCartDisplay(); return;
       }
 
       const canOrder = getOrderAvailability().canOrder;
       const hasName  = !!document.getElementById("customerName").value.trim();
 
       wrap.innerHTML = menus.map(([key, menu]) => {
-        const qty       = getCartQty(key);
-        const stock     = Number(menu.stock || 0);
-        const soldOut   = stock <= 0;
-        const disabled  = soldOut || !canOrder;
+        const qty        = getCartQty(key);
+        const stock      = Number(menu.stock || 0);
+        const soldOut    = stock <= 0;
+        const disabled   = soldOut || !canOrder;
         const nameLocked = !hasName && !disabled;
-        const inCart    = qty > 0;
+        const inCart     = qty > 0;
 
         const stockHtml = soldOut
           ? `<div class="menu-stock soldout">품절</div>`
-          : (!canOrder
-            ? `<div class="menu-stock soldout">주문 불가</div>`
-            : `<div class="menu-stock">남은 수량 ${stock}개</div>`);
+          : (!canOrder ? `<div class="menu-stock soldout">주문 불가</div>`
+                       : `<div class="menu-stock">남은 수량 ${stock}개</div>`);
 
         let ctrlHtml = "";
         if (!disabled && !nameLocked) {
-          if (inCart) {
-            ctrlHtml = `
-              <div class="qty-ctrl">
+          ctrlHtml = inCart
+            ? `<div class="qty-ctrl">
                 <button class="qty-btn minus" onclick="event.stopPropagation();changeQty('${key}',-1)" ${qty<=0?"disabled":""}>−</button>
                 <span class="qty-num">${qty}</span>
                 <button class="qty-btn plus"  onclick="event.stopPropagation();changeQty('${key}',1)"  ${qty>=stock?"disabled":""}>+</button>
-              </div>`;
-          } else {
-            ctrlHtml = `<button class="add-btn" onclick="event.stopPropagation();addToCart('${key}')">+ 담기</button>`;
-          }
+               </div>`
+            : `<button class="add-btn" onclick="event.stopPropagation();addToCart('${key}')">+ 담기</button>`;
         }
 
         const clickAttr = nameLocked
@@ -983,8 +789,7 @@
       const input = document.getElementById("customerName");
       input.scrollIntoView({ behavior: "smooth", block: "center" });
       input.focus();
-      input.classList.remove("prompt");
-      void input.offsetWidth;
+      input.classList.remove("prompt"); void input.offsetWidth;
       input.classList.add("prompt");
       setTimeout(() => input.classList.remove("prompt"), 1650);
       showToast("👆 먼저 이름을 입력해 주세요");
@@ -993,11 +798,11 @@
     function addToCart(menuId) {
       if (!document.getElementById("customerName").value.trim()) { focusNameInput(); return; }
       const info = getOrderAvailability();
-      if (!info.canOrder) { alert(info.desc || "현재 주문할 수 없습니다."); return; }
+      if (!info.canOrder) { showToast(info.desc || "현재 주문할 수 없습니다."); return; }
       const menu  = menuMap[menuId];
       if (!menu) return;
       const stock = Number(menu.stock || 0);
-      if (stock <= 0) { alert("품절입니다."); return; }
+      if (stock <= 0) { showToast("품절입니다."); return; }
       const cur = getCartQty(menuId);
       if (cur >= stock) { showToast("더 담을 수 없어요. 남은 수량만큼만 가능합니다."); return; }
       cart[menuId] = cur + 1;
@@ -1006,8 +811,7 @@
     }
 
     function changeQty(menuId, delta) {
-      const menu  = menuMap[menuId];
-      if (!menu) return;
+      const menu  = menuMap[menuId]; if (!menu) return;
       const cur   = getCartQty(menuId);
       const next  = cur + delta;
       const stock = Number(menu.stock || 0);
@@ -1025,9 +829,8 @@
       return Object.entries(cart)
         .filter(([_, qty]) => Number(qty) > 0)
         .map(([menuId, qty]) => {
-          const menu = menuMap[menuId];
-          if (!menu) return null;
-          return { menuId, name: menu.name, price: Number(menu.price || 0), qty: Number(qty), amount: Number(menu.price || 0) * Number(qty) };
+          const menu = menuMap[menuId]; if (!menu) return null;
+          return { menuId, name: menu.name, price: Number(menu.price||0), qty: Number(qty), amount: Number(menu.price||0)*Number(qty) };
         }).filter(Boolean);
     }
 
@@ -1040,22 +843,17 @@
       const cartBarEl  = document.getElementById("cartBar");
 
       if (!items.length) {
-        itemsEl.innerHTML = "";
-        emptyEl.style.display  = "block";
-        totalRowEl.style.display = "none";
-        cartBarEl.classList.remove("visible");
-        updateSubmitButtonState();
-        return;
+        itemsEl.innerHTML = ""; emptyEl.style.display = "block";
+        totalRowEl.style.display = "none"; cartBarEl.classList.remove("visible");
+        updateSubmitButtonState(); return;
       }
 
-      emptyEl.style.display    = "none";
-      totalRowEl.style.display = "block";
+      emptyEl.style.display = "none"; totalRowEl.style.display = "block";
       cartBarEl.classList.add("visible");
 
       let total = 0, totalQty = 0;
       itemsEl.innerHTML = items.map(item => {
-        total    += item.amount;
-        totalQty += item.qty;
+        total += item.amount; totalQty += item.qty;
         return `
           <div class="cart-item">
             <div class="cart-item-info">
@@ -1085,10 +883,10 @@
       if (!btn) return;
       const canSubmit = info.canOrder && !!hasName && totalQty > 0;
       btn.disabled = !canSubmit;
-      if (!info.canOrder)   btn.innerText = "현재 주문을 받지 않습니다";
-      else if (!hasName)    btn.innerText = "1단계: 이름을 먼저 입력해 주세요";
+      if (!info.canOrder)     btn.innerText = "현재 주문을 받지 않습니다";
+      else if (!hasName)      btn.innerText = "1단계: 이름을 먼저 입력해 주세요";
       else if (totalQty <= 0) btn.innerText = "2단계: 물건을 먼저 골라주세요";
-      else                  btn.innerText  = "✅ 주문하기";
+      else                    btn.innerText = "✅ 주문하기";
     }
 
     /* ── 주문 현황 ── */
@@ -1101,20 +899,18 @@
       return `<div class="progress-steps">` +
         STATUS_STEPS_LIST.map((s, i) => {
           const cls = i < cur ? "done" : i === cur ? "current" : "";
-          const dot = i < cur ? "✓" : String(i + 1);
-          const lbl = STATUS_STEPS_KR[i].replace("\n", "<br>");
-          return `<div class="ps-item ${cls}"><div class="ps-dot">${dot}</div><div class="ps-label">${lbl}</div></div>`;
-        }).join("") +
-        `</div>`;
+          const dot = i < cur ? "✓" : String(i+1);
+          return `<div class="ps-item ${cls}"><div class="ps-dot">${dot}</div><div class="ps-label">${STATUS_STEPS_KR[i].replace("\n","<br>")}</div></div>`;
+        }).join("") + `</div>`;
     }
 
     const STATUS_LABEL = {
-      "주문접수": "주문이 접수되었습니다",
-      "입금확인": "입금을 확인했습니다",
-      "준비중":   "물건을 준비하고 있습니다",
-      "준비완료": "물건 준비가 완료되었습니다!",
-      "수령완료": "수령이 완료되었습니다",
-      "취소":    "주문이 취소되었습니다"
+      "주문접수": "💳 입금을 기다리고 있습니다",
+      "입금확인": "✅ 입금이 확인되었습니다",
+      "준비중":   "🛍️ 물건을 준비하고 있습니다",
+      "준비완료": "🎉 물건 준비가 완료되었습니다!",
+      "수령완료": "👍 수령이 완료되었습니다",
+      "취소":    "❌ 주문이 취소되었습니다"
     };
 
     function renderMyOrder() {
@@ -1135,14 +931,26 @@
 
       const activeStatuses = ["주문접수","입금확인","준비중","준비완료"];
       const ahead = orders.filter(o =>
-        activeStatuses.includes(o.status) &&
-        Number(o.queueNumber) < Number(myOrder.queueNumber)
+        activeStatuses.includes(o.status) && Number(o.queueNumber) < Number(myOrder.queueNumber)
       ).length;
 
-      const isReady    = myOrder.status === "준비완료";
-      const itemsHtml  = (myOrder.items || []).map(item => `<div>• ${escapeHtml(item.name)} ${item.qty}개</div>`).join("");
-      const stCls      = `st-${myOrder.status}`;
-      const stLabel    = STATUS_LABEL[myOrder.status] || myOrder.status;
+      const itemsHtml = (myOrder.items || []).map(item => `<div>• ${escapeHtml(item.name)} ${item.qty}개</div>`).join("");
+      const stCls     = `st-${myOrder.status}`;
+      const stLabel   = STATUS_LABEL[myOrder.status] || myOrder.status;
+
+      // 주문접수 상태 → 입금 안내 박스 표시
+      const bn = paymentInfo.bankName      || "";
+      const an = paymentInfo.accountNumber || "";
+      const ao = paymentInfo.accountOwner  || paymentInfo.accountHolder || "";
+      const acctFull = `${bn} ${an}`;
+      const paymentNeedHtml = (myOrder.status === "주문접수" && (bn || an)) ? `
+        <div class="payment-needed-box">
+          <div class="payment-needed-title">💳 아직 입금 전입니다</div>
+          ${bn ? `<div class="payment-needed-acct">${escapeHtml(bn)}</div>` : ""}
+          <div class="payment-needed-acct">${escapeHtml(an)}</div>
+          ${ao ? `<div class="payment-needed-owner">통장 이름: ${escapeHtml(ao)}</div>` : ""}
+          <button class="copy-acct-btn" onclick="copyAccountInOrder('${escapeHtml(acctFull)}')">📋 계좌번호 복사하기</button>
+        </div>` : "";
 
       wrap.innerHTML = `
         <div>
@@ -1150,15 +958,24 @@
           <div class="order-time-sm">${escapeHtml(myOrder.createdAtText || formatDateTime(myOrder.createdAt))}</div>
           <div class="status-box ${stCls}">${stLabel}</div>
           ${renderProgressSteps(myOrder.status)}
+          ${paymentNeedHtml}
           ${!["수령완료","취소"].includes(myOrder.status)
             ? `<div class="ahead-box">⏳ 내 앞에 대기 중인 주문: <strong>${ahead}건</strong></div>` : ""}
           <div class="order-items">${itemsHtml}</div>
           <div class="order-total-row"><span>합계</span><span>${currency(myOrder.totalAmount)}</span></div>
           <div class="act-btns">
-            <button class="act-btn act-blue" onclick="copyText('${escapeHtml(myOrder.orderNumber||"")}')">주문번호 복사</button>
             <button class="act-btn act-gray" onclick="clearMyOrder()">기록 지우기</button>
           </div>
         </div>`;
+    }
+
+    function copyAccountInOrder(text) {
+      const doIt = () => showToast("✅ 계좌번호가 복사되었습니다");
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(doIt).catch(() => fallbackCopy(text, doIt));
+      } else {
+        fallbackCopy(text, doIt);
+      }
     }
 
     function clearMyOrder() {
@@ -1209,17 +1026,13 @@
     /* ── 주문 제출 ── */
     async function submitOrder() {
       const availability = getOrderAvailability();
-      if (!availability.canOrder) { alert(availability.desc || "현재 주문할 수 없습니다."); return; }
+      if (!availability.canOrder) { showToast(availability.desc || "현재 주문할 수 없습니다."); return; }
 
       const customerName = document.getElementById("customerName").value.trim();
-      if (!customerName) {
-        alert("이름을 입력해 주세요.");
-        document.getElementById("customerName").focus();
-        return;
-      }
+      if (!customerName) { focusNameInput(); return; }
 
       const items = getCartItems();
-      if (!items.length) { alert("물건을 1개 이상 담아주세요."); return; }
+      if (!items.length) { showToast("물건을 1개 이상 담아주세요."); return; }
 
       const totalAmount = items.reduce((s, i) => s + i.amount, 0);
       const submitBtn   = document.getElementById("submitBtn");
@@ -1250,15 +1063,9 @@
         renderMenus();
         renderMyOrder();
 
-        notice.innerHTML = `
-          <div class="notice-ok">
-            ✅ 주문이 완료되었습니다!<br/>
-            <strong>주문번호: ${escapeHtml(orderNumber)}</strong><br/>
-            아래 계좌번호를 복사해서 입금해 주세요.<br/>
-            입금 후 맨 아래 <strong>내 주문 현황</strong>에서 상태를 확인하세요.
-          </div>`;
+        // 입금 안내 팝업 표시
+        showPayPopup(orderNumber, totalAmount);
 
-        document.getElementById("paymentSection").scrollIntoView({ behavior: "smooth", block: "start" });
       } catch (error) {
         notice.innerHTML = `<div class="notice-err">⚠️ 주문 중 오류가 발생했습니다.<br/>${escapeHtml(error.message || "잠시 후 다시 시도해 주세요.")}</div>`;
       } finally {
@@ -1281,9 +1088,9 @@
         menuMap = snap.val() || {};
         Object.keys(cart).forEach(menuId => {
           const menu = menuMap[menuId];
-          if (!menu || menu.active === false || Number(menu.stock || 0) <= 0) { delete cart[menuId]; return; }
-          if (Number(cart[menuId] || 0) > Number(menu.stock || 0)) {
-            cart[menuId] = Number(menu.stock || 0);
+          if (!menu || menu.active === false || Number(menu.stock||0) <= 0) { delete cart[menuId]; return; }
+          if (Number(cart[menuId]||0) > Number(menu.stock||0)) {
+            cart[menuId] = Number(menu.stock||0);
             if (cart[menuId] <= 0) delete cart[menuId];
           }
         });
@@ -1293,7 +1100,17 @@
     function listenPayment() {
       db.ref(PAYMENT_PATH).on("value", snap => {
         paymentInfo = snap.val() || {};
-        renderPaymentInfo();
+        // 팝업이 열려 있으면 계좌 정보 갱신
+        if (document.getElementById("payPopup").classList.contains("show")) {
+          const bn = paymentInfo.bankName || "";
+          const an = paymentInfo.accountNumber || "";
+          const ao = paymentInfo.accountOwner || paymentInfo.accountHolder || "";
+          popupAcctText = `${bn} ${an}`;
+          document.getElementById("popupBank").textContent  = bn;
+          document.getElementById("popupAcct").textContent  = an;
+          document.getElementById("popupOwner").textContent = ao ? `통장 이름: ${ao}` : "";
+        }
+        renderMyOrder(); // 주문현황의 입금 안내 박스도 갱신
       });
     }
     function listenControl() {
