@@ -499,7 +499,8 @@
       if (!confirm("주문을 취소하고 재고를 복구할까요?")) return;
       const order = orders.find(o => o.id === id);
       if (order && order.items) {
-        order.items.forEach(item =>
+        const itemList = Array.isArray(order.items) ? order.items : Object.values(order.items);
+        itemList.forEach(item =>
           db.ref(`${MENU_PATH}/${item.menuId}/stock`).transaction(s => (s || 0) + item.qty)
         );
       }
@@ -699,7 +700,7 @@
             </div>
             <div class="workflow-steps">${buildWorkflow(o.status)}</div>
             <div class="order-items">
-              ${(o.items||[]).map(i => `• ${i.name} ${i.qty}개`).join('<br>') || '주문내역 없음'}
+              ${(Array.isArray(o.items) ? o.items : Object.values(o.items||{})).map(i => `• ${i.name} ${i.qty}개`).join('<br>') || '주문내역 없음'}
               ${o.totalAmount ? `<div class="order-total">합계 ${Number(o.totalAmount).toLocaleString()}원</div>` : ''}
             </div>
             ${buildActions(o)}
@@ -716,7 +717,7 @@
             </summary>
             <div class="done-order-detail">
               <div style="margin-bottom:6px;"><strong>완료</strong> ${formatDateTime(o.completedAt)}</div>
-              <div>${(o.items||[]).map(i=>`• ${i.name} ${i.qty}개`).join('<br>')||'주문내역 없음'}</div>
+              <div>${(Array.isArray(o.items) ? o.items : Object.values(o.items||{})).map(i=>`• ${i.name} ${i.qty}개`).join('<br>')||'주문내역 없음'}</div>
             </div>
           </details>
         `).join('')}
@@ -791,12 +792,26 @@
       const itemSales = {};
 
       completedOrders.forEach(o => {
-        (o.items || []).forEach(item => {
-          const key   = item.menuId || item.name;
-          const price = (item.menuId && menuMap[item.menuId])
-                        ? Number(menuMap[item.menuId].price || 0)
-                        : 0;
-          if (!itemSales[key]) itemSales[key] = { name: item.name, qty: 0, amount: 0 };
+        // Firebase는 배열을 객체로 반환할 수 있으므로 양쪽 모두 처리
+        const itemList = Array.isArray(o.items)
+          ? o.items
+          : Object.values(o.items || {});
+
+        itemList.forEach(item => {
+          if (!item || !item.name) return;
+          const name = item.name;
+          const key  = item.menuId || name;
+
+          // 가격 우선순위: ① item에 직접 저장된 price ② menuId로 menuMap 조회 ③ name으로 menuMap 조회
+          let price = Number(item.price || 0);
+          if (!price && item.menuId && menuMap[item.menuId])
+            price = Number(menuMap[item.menuId].price || 0);
+          if (!price) {
+            const found = Object.values(menuMap).find(m => m.name === name);
+            if (found) price = Number(found.price || 0);
+          }
+
+          if (!itemSales[key]) itemSales[key] = { name, qty: 0, amount: 0 };
           itemSales[key].qty    += Number(item.qty || 0);
           itemSales[key].amount += Number(item.qty || 0) * price;
         });
