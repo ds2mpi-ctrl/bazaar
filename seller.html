@@ -268,6 +268,17 @@
       </div>
 
       <div class="section">
+        <div class="title">📦 품목별 매출 정산</div>
+        <div id="itemSalesDisplay">
+          <div style="text-align:center;padding:10px;color:#ccc;font-size:13px;">수령완료된 주문이 없습니다.</div>
+        </div>
+        <div id="itemSalesTotal" style="display:none;border-top:2px solid #eee;margin-top:8px;padding-top:10px;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--muted);font-weight:700;">총 합계</span>
+          <strong style="font-size:16px;color:var(--dark);" id="itemSalesTotalAmt"></strong>
+        </div>
+      </div>
+
+      <div class="section">
         <div class="title">💳 입금 계좌 설정</div>
         <div style="display:flex;gap:5px;">
           <input type="text" id="bankName" placeholder="은행명" />
@@ -550,17 +561,16 @@
       const now  = Date.now();
 
       // 긴급도 정렬 (낮을수록 상단)
-      const urgency = { "미수령": 0, "준비완료": 1, "준비중": 2, "입금확인": 3, "주문접수": 4 };
+      // 대기 그룹(주문접수/입금확인/준비중)은 동일 우선순위 → 고객 호출 전까지 접수 순서 유지
+      const urgency = { "미수령": 0, "준비완료": 1, "준비중": 2, "입금확인": 2, "주문접수": 2 };
 
       let activeOrders = orders
         .filter(o => !["수령완료", "취소"].includes(o.status))
         .sort((a, b) => {
           const ua = urgency[a.status] ?? 9, ub = urgency[b.status] ?? 9;
           if (ua !== ub) return ua - ub;
-          // 같은 상태: 오래된 것 먼저
-          const timeA = (a.status === "준비완료" || a.status === "미수령") ? a.readyAt : a.createdAt;
-          const timeB = (b.status === "준비완료" || b.status === "미수령") ? b.readyAt : b.createdAt;
-          return (timeA || 0) - (timeB || 0);
+          // 같은 우선순위: 항상 접수 시간순(오래된 것 먼저)
+          return (a.createdAt || 0) - (b.createdAt || 0);
         });
 
       let doneOrders = orders
@@ -757,7 +767,7 @@
       const overdue = orders.filter(o => o.status === "미수령").length;
       const done    = orders.filter(o => o.status === "수령완료").length;
       const sales   = orders
-        .filter(o => o.status !== "취소")
+        .filter(o => o.status === "수령완료")
         .reduce((acc, o) => acc + Number(o.totalAmount || 0), 0);
 
       document.getElementById("waitingCount").textContent = waiting;
@@ -775,10 +785,57 @@
       document.getElementById("card-overdue")?.classList.toggle("has-overdue", overdue > 0);
     }
 
+    // ── 품목별 매출 정산 ──
+    function renderItemSales() {
+      const completedOrders = orders.filter(o => o.status === "수령완료");
+      const itemSales = {};
+
+      completedOrders.forEach(o => {
+        (o.items || []).forEach(item => {
+          const key   = item.menuId || item.name;
+          const price = (item.menuId && menuMap[item.menuId])
+                        ? Number(menuMap[item.menuId].price || 0)
+                        : 0;
+          if (!itemSales[key]) itemSales[key] = { name: item.name, qty: 0, amount: 0 };
+          itemSales[key].qty    += Number(item.qty || 0);
+          itemSales[key].amount += Number(item.qty || 0) * price;
+        });
+      });
+
+      const wrap    = document.getElementById("itemSalesDisplay");
+      const totalEl = document.getElementById("itemSalesTotal");
+      const amtEl   = document.getElementById("itemSalesTotalAmt");
+      if (!wrap) return;
+
+      const entries = Object.values(itemSales);
+      if (!entries.length) {
+        wrap.innerHTML = '<div style="text-align:center;padding:10px;color:#ccc;font-size:13px;">수령완료된 주문이 없습니다.</div>';
+        if (totalEl) totalEl.style.display = 'none';
+        return;
+      }
+
+      entries.sort((a, b) => b.amount - a.amount);
+      const totalAmount = entries.reduce((s, e) => s + e.amount, 0);
+
+      wrap.innerHTML = entries.map(e => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid #f5f5f5;">
+          <div>
+            <strong style="font-size:14px;">${e.name}</strong>
+            <span style="font-size:12px;color:var(--muted);margin-left:6px;">${e.qty}개 판매</span>
+          </div>
+          <strong style="color:var(--blue);font-size:14px;">${e.amount.toLocaleString()}원</strong>
+        </div>
+      `).join('');
+
+      if (totalEl) totalEl.style.display = 'flex';
+      if (amtEl)   amtEl.textContent = totalAmount.toLocaleString() + '원';
+    }
+
     // ── 데이터 리스너 ──
     db.ref(MENU_PATH).on("value", s => {
       menuMap = s.val() || {};
       renderMenus();
+      renderItemSales();
     });
 
     db.ref(PAYMENT_PATH).on("value", s => {
@@ -815,6 +872,7 @@
       previousOrderIds = new Set(orders.map(o => o.id));
       renderOrders();
       updateSummary();
+      renderItemSales();
     });
   </script>
 </body>
