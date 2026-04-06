@@ -788,21 +788,19 @@
 
     // ── 품목별 매출 정산 ──
     function renderItemSales() {
-      const completedOrders = orders.filter(o => o.status === "수령완료");
+      // 입금확인 이상 = 결제 확정된 주문 (취소·주문접수 제외)
+      const PAID_STATUSES = ["입금확인","준비중","준비완료","미수령","수령완료"];
+      const paidOrders = orders.filter(o => PAID_STATUSES.includes(o.status));
+
       const itemSales = {};
-
-      completedOrders.forEach(o => {
-        // Firebase는 배열을 객체로 반환할 수 있으므로 양쪽 모두 처리
-        const itemList = Array.isArray(o.items)
-          ? o.items
-          : Object.values(o.items || {});
-
+      paidOrders.forEach(o => {
+        const itemList = Array.isArray(o.items) ? o.items : Object.values(o.items || {});
         itemList.forEach(item => {
           if (!item || !item.name) return;
           const name = item.name;
           const key  = item.menuId || name;
 
-          // 가격 우선순위: ① item에 직접 저장된 price ② menuId로 menuMap 조회 ③ name으로 menuMap 조회
+          // 가격 우선순위: ① item 저장 price ② menuId → menuMap ③ name → menuMap
           let price = Number(item.price || 0);
           if (!price && item.menuId && menuMap[item.menuId])
             price = Number(menuMap[item.menuId].price || 0);
@@ -811,9 +809,13 @@
             if (found) price = Number(found.price || 0);
           }
 
-          if (!itemSales[key]) itemSales[key] = { name, qty: 0, amount: 0 };
-          itemSales[key].qty    += Number(item.qty || 0);
-          itemSales[key].amount += Number(item.qty || 0) * price;
+          // 수령완료 수량도 따로 집계
+          const doneQty = o.status === "수령완료" ? Number(item.qty || 0) : 0;
+
+          if (!itemSales[key]) itemSales[key] = { name, qty: 0, doneQty: 0, amount: 0, price };
+          itemSales[key].qty     += Number(item.qty || 0);
+          itemSales[key].doneQty += doneQty;
+          itemSales[key].amount  += Number(item.qty || 0) * price;
         });
       });
 
@@ -824,26 +826,39 @@
 
       const entries = Object.values(itemSales);
       if (!entries.length) {
-        wrap.innerHTML = '<div style="text-align:center;padding:10px;color:#ccc;font-size:13px;">수령완료된 주문이 없습니다.</div>';
+        wrap.innerHTML = '<div style="text-align:center;padding:14px;color:#aaa;font-size:13px;">입금확인된 주문이 없습니다.</div>';
         if (totalEl) totalEl.style.display = 'none';
         return;
       }
 
-      entries.sort((a, b) => b.amount - a.amount);
+      entries.sort((a, b) => b.qty - a.qty);
+      const totalQty    = entries.reduce((s, e) => s + e.qty, 0);
       const totalAmount = entries.reduce((s, e) => s + e.amount, 0);
 
       wrap.innerHTML = entries.map(e => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid #f5f5f5;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 2px;border-bottom:1px solid #f0f0f0;">
           <div>
             <strong style="font-size:14px;">${e.name}</strong>
-            <span style="font-size:12px;color:var(--muted);margin-left:6px;">${e.qty}개 판매</span>
+            <span style="font-size:12px;color:var(--muted);margin-left:6px;">${e.price > 0 ? Number(e.price).toLocaleString()+'원' : ''}</span>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">
+              총 ${e.qty}개 판매
+              ${e.doneQty < e.qty ? `<span style="color:var(--accent);">(수령완료 ${e.doneQty}개)</span>` : '<span style="color:#27ae60;">전량수령</span>'}
+            </div>
           </div>
-          <strong style="color:var(--blue);font-size:14px;">${e.amount.toLocaleString()}원</strong>
+          <strong style="color:var(--blue);font-size:15px;text-align:right;">${e.amount > 0 ? e.amount.toLocaleString()+'원' : e.qty+'개'}</strong>
         </div>
       `).join('');
 
-      if (totalEl) totalEl.style.display = 'flex';
-      if (amtEl)   amtEl.textContent = totalAmount.toLocaleString() + '원';
+      wrap.innerHTML += `
+        <div style="display:flex;justify-content:space-between;padding:10px 2px;margin-top:4px;border-top:2px solid #dfe4ea;font-size:13px;color:var(--muted);">
+          <span>총 <strong style="color:var(--dark);">${totalQty}개</strong> 판매</span>
+          <strong style="font-size:16px;color:var(--dark);">${totalAmount > 0 ? totalAmount.toLocaleString()+'원' : '-'}</strong>
+        </div>`;
+
+      if (totalEl) totalEl.style.display = 'none'; // 합계는 wrap 안에 포함했으므로 숨김
+
+      // 더미 div 유지 (amtEl 참조 오류 방지)
+      if (amtEl) amtEl.textContent = '';
     }
 
     // ── 데이터 리스너 ──
